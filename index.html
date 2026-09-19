@@ -68,10 +68,10 @@
                 <input type="text" id="searchInput" placeholder="Cth: +1 Kekuatan Lengan, Blox Fruits, Dupe Script..." 
                     class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium">
                 <button onclick="requestAI()" class="bg-emerald-600 hover:bg-emerald-500 text-black font-bold px-4 py-3 rounded-xl shrink-0 text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-900/30 transition-all active:scale-95">
-                    <i class="fa-solid fa-wand-magic-sparkles">></i> Generate AI
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI
                 </button>
             </div>
-            <p class="text-[11px] text-slate-400 italic">*Jika script yang kamu cari tidak ada di bawah, klik "Generate AI" agar asisten membuatkannya untukmu.</p>
+            <p class="text-[11px] text-slate-400 italic">*Jika script tidak ada di list, ketik nama gamenya lalu klik "Generate AI".</p>
         </div>
 
         <!-- Result Container / Script Cards -->
@@ -91,7 +91,7 @@
         const searchInput = document.getElementById('searchInput');
         const resultContainer = document.getElementById('resultContainer');
 
-        // Database awal script
+        // Database script
         let scriptsDB = [
             {
                 keyword: ['race for egg', 'egg', 'telur'],
@@ -110,11 +110,11 @@
                 code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptpastebin/raw/main/BloxFruitsHub"))()`
             },
             {
-                keyword: ['kekuatan', 'lengan', 'arm wrestling', 'tangan'],
-                title: '+1 Kekuatan untuk Menumbuhkan Lengan Anda - Auto Clicker & Dupe Base',
-                status: 'AI GENERATED',
-                statusColor: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
-                badges: ['CUSTOM', 'AUTO TRAIN'],
+                keyword: ['kekuatan', 'lengan', 'arm wrestling', 'tangan', '+1'],
+                title: '+1 Kekuatan untuk Menumbuhkan Lengan Anda - Auto Clicker & Dupe',
+                status: 'WORKING',
+                statusColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                badges: ['CUSTOM', 'AUTO TRAIN', 'DUPES'],
                 code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/freefire1528965-tech/KakekLua/main/scripts/ArmWrestlingDupe.lua"))()`
             }
         ];
@@ -170,7 +170,6 @@
                 return;
             }
 
-            // Simulasi AI sedang meracik script otomatis
             resultContainer.innerHTML = `
                 <div class="bg-cardbg/50 border border-slate-800 rounded-2xl p-8 text-center space-y-3 animate-pulse">
                     <i class="fa-solid fa-spinner fa-spin text-emerald-400 text-3xl"></i>
@@ -180,7 +179,6 @@
             `;
 
             setTimeout(() => {
-                // Masukkan hasil buatan AI secara dinamis ke database lokal
                 const newScript = {
                     keyword: [query.toLowerCase()],
                     title: `Custom Script: ${query} (AI Generated)`,
