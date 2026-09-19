@@ -1,113 +1,422 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KakekLua Management</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            card: '#1e293b',
-                            accent: '#3b82f6'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .active-tab {
-            background-color: #3b82f6 !important;
-            color: #ffffff !important;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar Header */
+        header {
+            background-color: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #334155;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
             font-weight: bold;
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-free {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #334155;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tab-btn.active {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            font-weight: bold;
+        }
+
+        /* Main Content Container */
+        main {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Content Elements */
+        h1 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .label {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .value-amber {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-top: 4px;
+        }
+
+        .value-blue {
+            font-size: 14px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-top: 4px;
+        }
+
+        /* Chat UI */
+        .chat-container {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            height: 420px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 12px;
+        }
+
+        .msg-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .msg-row.user {
+            justify-content: flex-end;
+        }
+
+        .icon-bot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .icon-user {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .bubble-bot {
+            background-color: #334155;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border-top-left-radius: 0;
+            max-width: 85%;
+            line-height: 1.4;
+        }
+
+        .bubble-user {
+            background-color: #2563eb;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border-top-right-radius: 0;
+            max-width: 85%;
+            color: #fff;
+        }
+
+        .chat-input-area {
+            padding: 8px;
+            border-top: 1px solid #334155;
+            background-color: rgba(15, 23, 42, 0.6);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .btn-send {
+            background-color: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-copy {
+            background-color: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+
+        .tag {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .tag-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        .code-box {
+            background-color: #020617;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .code-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: #34d399;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        /* Form elements */
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            color: #fff;
+            font-size: 12px;
+            box-sizing: border-box;
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            width: 100%;
+            background-color: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .list-item {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col" style="background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);">
+<body>
 
     <!-- Header Top Bar -->
-    <header class="bg-slate-900/90 border-b border-slate-700/80 p-4 sticky top-0 z-50 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold text-blue-500">⚡ KakekLua</span>
-        </div>
-        <div class="flex items-center space-x-3">
-            <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-semibold">
-                FREE PLAN
-            </span>
-            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs">
-                U
-            </div>
+    <header>
+        <div class="logo">⚡ KakekLua</div>
+        <div class="user-badge">
+            <span class="badge-free">FREE PLAN</span>
+            <div class="avatar">U</div>
         </div>
     </header>
 
-    <!-- Navigation Bar (Scrollable & Super Responsive Touch) -->
-    <nav class="bg-slate-900/90 border-b border-slate-700/80 p-2 flex overflow-x-auto gap-2 z-40">
-        <button type="button" onclick="switchTab('overview')" id="btn-overview" class="tab-btn active-tab flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>📊</span> <span>Overview</span>
+    <!-- Navigation Bar -->
+    <nav>
+        <button type="button" onclick="showTab('overview', this)" class="tab-btn active">
+            📊 <span>Overview</span>
         </button>
-        <button type="button" onclick="switchTab('assistant')" id="btn-assistant" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>🤖</span> <span>AI Assistant</span>
+        <button type="button" onclick="showTab('assistant', this)" class="tab-btn">
+            🤖 <span>AI Assistant</span>
         </button>
-        <button type="button" onclick="switchTab('hwid')" id="btn-hwid" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>🔑</span> <span>HWID Reset</span>
+        <button type="button" onclick="showTab('hwid', this)" class="tab-btn">
+            🔑 <span>HWID Reset</span>
         </button>
-        <button type="button" onclick="switchTab('maps')" id="btn-maps" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>🗺️</span> <span>Supported Maps</span>
+        <button type="button" onclick="showTab('maps', this)" class="tab-btn">
+            🗺️ <span>Supported Maps</span>
         </button>
-        <button type="button" onclick="switchTab('scripts')" id="btn-scripts" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>📜</span> <span>Script Loader</span>
+        <button type="button" onclick="showTab('scripts', this)" class="tab-btn">
+            📜 <span>Script Loader</span>
         </button>
-        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
-            <span>⚙️</span> <span>Account Settings</span>
+        <button type="button" onclick="showTab('settings', this)" class="tab-btn">
+            ⚙️ <span>Account Settings</span>
         </button>
     </nav>
 
     <!-- Content Container -->
-    <main class="flex-1 p-4 space-y-4">
+    <main>
 
         <!-- TAB 1: OVERVIEW -->
-        <section id="tab-overview" class="tab-content block space-y-4">
-            <h1 class="text-lg font-bold">Dashboard Overview</h1>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
-                    <p class="text-[10px] text-slate-400">Status Akun</p>
-                    <p class="text-sm font-bold text-amber-400 mt-1">Free Tier</p>
+        <div id="tab-overview" class="tab-content active">
+            <h1>Dashboard Overview</h1>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="label">Status Akun</div>
+                    <div class="value-amber">Free Tier</div>
                 </div>
-                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
-                    <p class="text-[10px] text-slate-400">Sisa Reset HWID</p>
-                    <p class="text-sm font-bold text-blue-400 mt-1">3x / Bulan</p>
+                <div class="card">
+                    <div class="label">Sisa Reset HWID</div>
+                    <div class="value-blue">3x / Bulan</div>
                 </div>
             </div>
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-2">
-                <h2 class="text-xs font-semibold text-blue-400">Selamat Datang di KakekLua Management</h2>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    Tanyakan nama game/map Roblox yang ingin kamu cari script-nya ke AI Assistant di bawah ini!
+            <div class="card">
+                <div style="font-size: 12px; font-weight: bold; color: #60a5fa; margin-bottom: 6px;">Selamat Datang di KakekLua Management</div>
+                <p style="font-size: 12px; color: #cbd5e1; line-height: 1.4;">
+                    Tanyakan nama game/map Roblox yang ingin kamu cari script-nya ke AI Assistant di menu atas!
                 </p>
             </div>
-        </section>
+        </div>
 
         <!-- TAB 2: AI SCRIPT ASSISTANT -->
-        <section id="tab-assistant" class="tab-content hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-lg font-bold">AI Script Search Assistant</h1>
-                <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">Auto Copy System</span>
+        <div id="tab-assistant" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h1>AI Script Search Assistant</h1>
+                <span class="tag tag-blue">Auto Copy System</span>
             </div>
 
             <!-- Chat Container -->
-            <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 flex flex-col h-[420px]">
+            <div class="chat-container">
                 <!-- Chat Messages Area -->
-                <div id="chat-messages" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
+                <div id="chat-messages" class="chat-messages">
                     <!-- Bot Welcome Message -->
-                    <div class="flex items-start space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                        <div class="bg-slate-700 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
+                    <div class="msg-row">
+                        <div class="icon-bot">🤖</div>
+                        <div class="bubble-bot">
                             <b>HALO! SELAMAT DATANG DI ASISTEN SCRIPT KAKEK_VIPP</b> ⚡<br><br>
                             SILAHKAN CARI SCRIPT YG KAMU MAU DI ASISTEN KAKEK_VIPP<br>
                             TERIMAKASIH! 😁
@@ -116,231 +425,164 @@
                 </div>
 
                 <!-- Chat Input Area -->
-                <div class="p-2 border-t border-slate-700/80 bg-slate-900/60 flex space-x-2">
-                    <input type="text" id="chat-input" placeholder="Minta script map apa saja..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
-                    <button type="button" onclick="sendChatMessage()" class="bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium shrink-0">
-                        Cari Script
-                    </button>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Minta script map apa saja..." class="chat-input">
+                    <button type="button" onclick="sendChatMessage()" class="btn-send">Cari</button>
                 </div>
             </div>
-        </section>
+        </div>
 
         <!-- TAB 3: HWID RESET -->
-        <section id="tab-hwid" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">HWID Management</h1>
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
-                <p class="text-xs text-slate-400">HWID Terdaftar:</p>
-                <input type="text" value="DEV-893A-X902-KLUA" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300">
-                <button type="button" onclick="alert('Fitur Reset HWID akan aktif setelah Backend & Database dibuat!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Reset HWID Sekarang
-                </button>
+        <div id="tab-hwid" class="tab-content">
+            <h1>HWID Management</h1>
+            <div class="card">
+                <div class="label">HWID Terdaftar:</div>
+                <input type="text" value="DEV-893A-X902-KLUA" readonly>
+                <button type="button" onclick="alert('Fitur Reset HWID akan aktif setelah Database selesai!')" class="btn-action">Reset HWID Sekarang</button>
             </div>
-        </section>
+        </div>
 
         <!-- TAB 4: SUPPORTED MAPS -->
-        <section id="tab-maps" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Supported Maps & Scripts</h1>
-            <div class="space-y-2">
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
-                    <span class="text-xs font-medium">+1 Kekuatan Menumbuhkan Lengan</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
-                    <span class="text-xs font-medium">Blox Fruits (Sea 1-3)</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
-                    <span class="text-xs font-medium">Blade Ball (Auto Parry)</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
+        <div id="tab-maps" class="tab-content">
+            <h1>Supported Maps & Scripts</h1>
+            <div class="list-item">
+                <span>+1 Kekuatan Menumbuhkan Lengan</span>
+                <span class="tag tag-green">Ready</span>
             </div>
-        </section>
+            <div class="list-item">
+                <span>Blox Fruits (Sea 1-3)</span>
+                <span class="tag tag-green">Ready</span>
+            </div>
+            <div class="list-item">
+                <span>Blade Ball (Auto Parry)</span>
+                <span class="tag tag-green">Ready</span>
+            </div>
+        </div>
 
         <!-- TAB 5: SCRIPT LOADER -->
-        <section id="tab-scripts" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Script Loader</h1>
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
-                <p class="text-xs text-slate-400">Pilih Script Lua:</p>
-                <select class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+        <div id="tab-scripts" class="tab-content">
+            <h1>Script Loader</h1>
+            <div class="card">
+                <div class="label">Pilih Script Lua:</div>
+                <select>
                     <option>+1 Strength to Grow Your Arm Script (Keyless)</option>
                     <option>Blade Ball Auto Parry Hub</option>
                     <option>Blox Fruits All-In-One Hub</option>
                 </select>
-                <button type="button" onclick="alert('Script Loader akan dihubungkan ke Executor!')" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Load Script
-                </button>
+                <button type="button" onclick="alert('Script Loader terhubung ke Executor!')" class="btn-action" style="background-color: #10b981;">Load Script</button>
             </div>
-        </section>
+        </div>
 
         <!-- TAB 6: ACCOUNT SETTINGS -->
-        <section id="tab-settings" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Account Settings</h1>
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Username</label>
-                    <input type="text" value="UserDemo" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-400">
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Ganti Password</label>
-                    <input type="password" placeholder="Password Baru" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
-                </div>
-                <button type="button" onclick="alert('Simpan password berhasil!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Simpan Perubahan
-                </button>
+        <div id="tab-settings" class="tab-content">
+            <h1>Account Settings</h1>
+            <div class="card">
+                <div class="label">Username</div>
+                <input type="text" value="UserDemo" readonly>
+                <div class="label" style="margin-top: 10px;">Ganti Password</div>
+                <input type="password" placeholder="Password Baru">
+                <button type="button" onclick="alert('Simpan password berhasil!')" class="btn-action">Simpan Perubahan</button>
             </div>
-        </section>
+        </div>
 
     </main>
 
-    <!-- JavaScript Navigasi Paling Stabil -->
+    <!-- JavaScript Navigasi Paling Garansi Lancar -->
     <script>
-        function switchTab(tabName) {
-            // 1. Sembunyikan semua tab
-            const contents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < contents.length; i++) {
-                contents[i].classList.add('hidden');
-                contents[i].classList.remove('block');
+        function showTab(tabId, btnElement) {
+            // Sembunyikan semua tab
+            var tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+
+            // Matikan semua tombol
+            var btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            // Tampilkan tab target
+            var targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
             }
 
-            // 2. Reset semua warna tombol ke default
-            const buttons = document.getElementsByClassName('tab-btn');
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove('active-tab');
-                buttons[i].classList.add('bg-slate-800', 'text-slate-300');
-            }
-
-            // 3. Tampilkan tab yang diklik
-            const targetContent = document.getElementById('tab-' + tabName);
-            if (targetContent) {
-                targetContent.classList.remove('hidden');
-                targetContent.classList.add('block');
-            }
-
-            // 4. Ubah warna tombol yang aktif
-            const targetBtn = document.getElementById('btn-' + tabName);
-            if (targetBtn) {
-                targetBtn.classList.add('active-tab');
-                targetBtn.classList.remove('bg-slate-800', 'text-slate-300');
+            // Aktifkan tombol yang diklik
+            if (btnElement) {
+                btnElement.classList.add('active');
             }
         }
 
-        // Fungsi Salin Teks
-        function copyScript(scriptText, btnElement) {
-            navigator.clipboard.writeText(scriptText).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = "✅ Copied!";
-                btnElement.classList.replace("bg-blue-600", "bg-emerald-600");
-                
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.classList.replace("bg-emerald-600", "bg-blue-600");
+        function copyScript(text, btn) {
+            navigator.clipboard.writeText(text).then(function() {
+                var original = btn.innerText;
+                btn.innerText = "✅ Copied!";
+                btn.style.backgroundColor = "#10b981";
+                setTimeout(function() {
+                    btn.innerText = original;
+                    btn.style.backgroundColor = "#2563eb";
                 }, 2000);
-            }).catch(err => {
-                alert("Gagal menyalin, salin secara manual.");
+            }).catch(function() {
+                alert("Gagal menyalin otomatis!");
             });
         }
 
-        // Logic AI Assistant
         function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const messagesContainer = document.getElementById('chat-messages');
-            const text = input.value.trim();
+            var input = document.getElementById('chat-input');
+            var container = document.getElementById('chat-messages');
+            var text = input.value.trim();
 
             if (!text) return;
 
-            // Render Pesan User
-            const userMsg = document.createElement('div');
-            userMsg.className = "flex items-start justify-end space-x-2";
-            userMsg.innerHTML = `
-                <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-white">
-                    ${text}
-                </div>
-                <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0">U</div>
-            `;
-            messagesContainer.appendChild(userMsg);
+            // Chat User
+            var userDiv = document.createElement('div');
+            userDiv.className = 'msg-row user';
+            userDiv.innerHTML = '<div class="bubble-user">' + text + '</div><div class="icon-user">U</div>';
+            container.appendChild(userDiv);
+
             input.value = '';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            container.scrollTop = container.scrollHeight;
 
-            // Pencarian Otomatis Bot
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = "flex items-start space-x-2";
+            // Jawaban AI
+            setTimeout(function() {
+                var botDiv = document.createElement('div');
+                botDiv.className = 'msg-row';
 
-                const lowerText = text.toLowerCase();
-                let replyContent = "";
+                var lower = text.toLowerCase();
+                var htmlContent = '';
 
-                if (lowerText.includes('lengan') || lowerText.includes('kekuatan') || lowerText.includes('+1 strength') || lowerText.includes('grow arm')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/1StrengthtoGrowYourArm"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: +1 Strength to Grow Your Arm</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">⚡ AUTO TRAIN</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-700 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                } 
-                else if (lowerText.includes('blox fruit') || lowerText.includes('blox')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BloxFruits"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: Blox Fruits</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🌾 AUTO FARM</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-700 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                } 
-                else if (lowerText.includes('blade ball') || lowerText.includes('blade')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BladeBall"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: Blade Ball</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🎯 AUTO PARRY</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-700 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                }
-                else {
-                    replyContent = `
-                        <b>Mohon maaf script belum ada di web maupun TikTok dan YouTube.</b> 🙏<br><br>
-                        Game/map yang kamu cari belum tersedia di database terverifikasi ASISTEN KAKEK_VIPP.
-                    `;
+                if (lower.includes('lengan') || lower.includes('kekuatan') || lower.includes('+1 strength') || lower.includes('grow arm')) {
+                    var code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/1StrengthtoGrowYourArm"))()';
+                    htmlContent = '<b>Script ditemukan untuk: +1 Strength to Grow Your Arm</b>' +
+                        '<div class="tags"><span class="tag tag-green">🔓 KEYLESS</span><span class="tag tag-blue">⚡ AUTO TRAIN</span></div>' +
+                        '<div class="code-box"><div class="code-text">' + code + '</div>' +
+                        '<button type="button" class="btn-copy" onclick="copyScript(\'' + code + '\', this)">📋 Copy</button></div>';
+                } else if (lower.includes('blox fruit') || lower.includes('blox')) {
+                    var code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BloxFruits"))()';
+                    htmlContent = '<b>Script ditemukan untuk: Blox Fruits</b>' +
+                        '<div class="tags"><span class="tag tag-green">🔓 KEYLESS</span><span class="tag tag-blue">🌾 AUTO FARM</span></div>' +
+                        '<div class="code-box"><div class="code-text">' + code + '</div>' +
+                        '<button type="button" class="btn-copy" onclick="copyScript(\'' + code + '\', this)">📋 Copy</button></div>';
+                } else if (lowerText.includes('blade ball') || lowerText.includes('blade')) {
+                    var code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BladeBall"))()';
+                    htmlContent = '<b>Script ditemukan untuk: Blade Ball</b>' +
+                        '<div class="tags"><span class="tag tag-green">🔓 KEYLESS</span><span class="tag tag-blue">🎯 AUTO PARRY</span></div>' +
+                        '<div class="code-box"><div class="code-text">' + code + '</div>' +
+                        '<button type="button" class="btn-copy" onclick="copyScript(\'' + code + '\', this)">📋 Copy</button></div>';
+                } else {
+                    htmlContent = '<b>Mohon maaf script belum ada di web maupun TikTok dan YouTube.</b> 🙏<br><br>Game/map yang kamu cari belum tersedia di database terverifikasi ASISTEN KAKEK_VIPP.';
                 }
 
-                botMsg.innerHTML = `
-                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                    <div class="bg-slate-700 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
-                        ${replyContent}
-                    </div>
-                `;
-                messagesContainer.appendChild(botMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 600);
+                botDiv.innerHTML = '<div class="icon-bot">🤖</div><div class="bubble-bot">' + htmlContent + '</div>';
+                container.appendChild(botDiv);
+                container.scrollTop = container.scrollHeight;
+            }, 500);
         }
 
-        // Enter key listener
-        document.getElementById('chat-input')?.addEventListener('keypress', function (e) {
-            if (e.key ==
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+    </script>
+</body>
+</html>
