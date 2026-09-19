@@ -24,16 +24,16 @@
     </script>
     <style>
         .active-tab {
-            background-color: rgba(59, 130, 246, 0.25) !important;
-            color: #60a5fa !important;
-            border-left: 3px solid #3b82f6;
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col" style="background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);">
 
     <!-- Header Top Bar -->
-    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-700/60 p-4 sticky top-0 z-50 flex justify-between items-center">
+    <header class="bg-slate-900/90 border-b border-slate-700/80 p-4 sticky top-0 z-50 flex justify-between items-center">
         <div class="flex items-center space-x-2">
             <span class="text-xl font-bold text-blue-500">⚡ KakekLua</span>
         </div>
@@ -47,24 +47,24 @@
         </div>
     </header>
 
-    <!-- Navigation Bar (Mobile Scrollable) -->
-    <nav class="bg-slate-900/60 backdrop-blur-md border-b border-slate-700/60 p-2 flex overflow-x-auto gap-2">
-        <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active-tab flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap">
+    <!-- Navigation Bar (Scrollable & Super Responsive Touch) -->
+    <nav class="bg-slate-900/90 border-b border-slate-700/80 p-2 flex overflow-x-auto gap-2 z-40">
+        <button type="button" onclick="switchTab('overview')" id="btn-overview" class="tab-btn active-tab flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>📊</span> <span>Overview</span>
         </button>
-        <button onclick="switchTab('assistant')" id="btn-assistant" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
+        <button type="button" onclick="switchTab('assistant')" id="btn-assistant" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>🤖</span> <span>AI Assistant</span>
         </button>
-        <button onclick="switchTab('hwid')" id="btn-hwid" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
+        <button type="button" onclick="switchTab('hwid')" id="btn-hwid" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>🔑</span> <span>HWID Reset</span>
         </button>
-        <button onclick="switchTab('maps')" id="btn-maps" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
+        <button type="button" onclick="switchTab('maps')" id="btn-maps" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>🗺️</span> <span>Supported Maps</span>
         </button>
-        <button onclick="switchTab('scripts')" id="btn-scripts" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
+        <button type="button" onclick="switchTab('scripts')" id="btn-scripts" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>📜</span> <span>Script Loader</span>
         </button>
-        <button onclick="switchTab('settings')" id="btn-settings" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
+        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-slate-800 text-slate-300 flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs whitespace-nowrap shrink-0">
             <span>⚙️</span> <span>Account Settings</span>
         </button>
     </nav>
@@ -73,19 +73,19 @@
     <main class="flex-1 p-4 space-y-4">
 
         <!-- TAB 1: OVERVIEW -->
-        <section id="tab-overview" class="tab-content space-y-4">
+        <section id="tab-overview" class="tab-content block space-y-4">
             <h1 class="text-lg font-bold">Dashboard Overview</h1>
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-800/60 backdrop-blur-md p-3.5 rounded-xl border border-slate-700/60">
+                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
                     <p class="text-[10px] text-slate-400">Status Akun</p>
                     <p class="text-sm font-bold text-amber-400 mt-1">Free Tier</p>
                 </div>
-                <div class="bg-slate-800/60 backdrop-blur-md p-3.5 rounded-xl border border-slate-700/60">
+                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
                     <p class="text-[10px] text-slate-400">Sisa Reset HWID</p>
                     <p class="text-sm font-bold text-blue-400 mt-1">3x / Bulan</p>
                 </div>
             </div>
-            <div class="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/60 space-y-2">
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-2">
                 <h2 class="text-xs font-semibold text-blue-400">Selamat Datang di KakekLua Management</h2>
                 <p class="text-xs text-slate-300 leading-relaxed">
                     Tanyakan nama game/map Roblox yang ingin kamu cari script-nya ke AI Assistant di bawah ini!
@@ -101,13 +101,13 @@
             </div>
 
             <!-- Chat Container -->
-            <div class="bg-slate-800/60 backdrop-blur-md rounded-xl border border-slate-700/60 flex flex-col h-[420px]">
+            <div class="bg-slate-800/80 rounded-xl border border-slate-700/80 flex flex-col h-[420px]">
                 <!-- Chat Messages Area -->
                 <div id="chat-messages" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
                     <!-- Bot Welcome Message -->
                     <div class="flex items-start space-x-2">
                         <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                        <div class="bg-slate-700/80 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
+                        <div class="bg-slate-700 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
                             <b>HALO! SELAMAT DATANG DI ASISTEN SCRIPT KAKEK_VIPP</b> ⚡<br><br>
                             SILAHKAN CARI SCRIPT YG KAMU MAU DI ASISTEN KAKEK_VIPP<br>
                             TERIMAKASIH! 😁
@@ -116,9 +116,9 @@
                 </div>
 
                 <!-- Chat Input Area -->
-                <div class="p-2 border-t border-slate-700/60 bg-slate-900/40 flex space-x-2">
-                    <input type="text" id="chat-input" placeholder="Minta script map apa saja..." class="flex-1 bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
-                    <button onclick="sendChatMessage()" class="bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium shrink-0">
+                <div class="p-2 border-t border-slate-700/80 bg-slate-900/60 flex space-x-2">
+                    <input type="text" id="chat-input" placeholder="Minta script map apa saja..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+                    <button type="button" onclick="sendChatMessage()" class="bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium shrink-0">
                         Cari Script
                     </button>
                 </div>
@@ -128,10 +128,10 @@
         <!-- TAB 3: HWID RESET -->
         <section id="tab-hwid" class="tab-content hidden space-y-4">
             <h1 class="text-lg font-bold">HWID Management</h1>
-            <div class="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/60 space-y-3">
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
                 <p class="text-xs text-slate-400">HWID Terdaftar:</p>
-                <input type="text" value="DEV-893A-X902-KLUA" readonly class="w-full bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300">
-                <button onclick="alert('Fitur Reset HWID akan aktif setelah Backend & Database dibuat!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
+                <input type="text" value="DEV-893A-X902-KLUA" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300">
+                <button type="button" onclick="alert('Fitur Reset HWID akan aktif setelah Backend & Database dibuat!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
                     Reset HWID Sekarang
                 </button>
             </div>
@@ -141,15 +141,15 @@
         <section id="tab-maps" class="tab-content hidden space-y-4">
             <h1 class="text-lg font-bold">Supported Maps & Scripts</h1>
             <div class="space-y-2">
-                <div class="bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
                     <span class="text-xs font-medium">+1 Kekuatan Menumbuhkan Lengan</span>
                     <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
                 </div>
-                <div class="bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
                     <span class="text-xs font-medium">Blox Fruits (Sea 1-3)</span>
                     <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
                 </div>
-                <div class="bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
                     <span class="text-xs font-medium">Blade Ball (Auto Parry)</span>
                     <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
                 </div>
@@ -159,14 +159,14 @@
         <!-- TAB 5: SCRIPT LOADER -->
         <section id="tab-scripts" class="tab-content hidden space-y-4">
             <h1 class="text-lg font-bold">Script Loader</h1>
-            <div class="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/60 space-y-3">
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
                 <p class="text-xs text-slate-400">Pilih Script Lua:</p>
-                <select class="w-full bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                <select class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
                     <option>+1 Strength to Grow Your Arm Script (Keyless)</option>
                     <option>Blade Ball Auto Parry Hub</option>
                     <option>Blox Fruits All-In-One Hub</option>
                 </select>
-                <button onclick="alert('Script Loader akan dihubungkan ke Executor!')" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs">
+                <button type="button" onclick="alert('Script Loader akan dihubungkan ke Executor!')" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs">
                     Load Script
                 </button>
             </div>
@@ -175,16 +175,16 @@
         <!-- TAB 6: ACCOUNT SETTINGS -->
         <section id="tab-settings" class="tab-content hidden space-y-4">
             <h1 class="text-lg font-bold">Account Settings</h1>
-            <div class="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/60 space-y-3">
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
                 <div>
                     <label class="text-[10px] text-slate-400 block mb-1">Username</label>
-                    <input type="text" value="UserDemo" readonly class="w-full bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-400">
+                    <input type="text" value="UserDemo" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-400">
                 </div>
                 <div>
                     <label class="text-[10px] text-slate-400 block mb-1">Ganti Password</label>
-                    <input type="password" placeholder="Password Baru" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                    <input type="password" placeholder="Password Baru" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
                 </div>
-                <button onclick="alert('Simpan password berhasil!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
+                <button type="button" onclick="alert('Simpan password berhasil!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
                     Simpan Perubahan
                 </button>
             </div>
@@ -192,29 +192,39 @@
 
     </main>
 
-    <!-- JavaScript Navigasi & AI Assistant Logic -->
+    <!-- JavaScript Navigasi Paling Stabil -->
     <script>
         function switchTab(tabName) {
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.add('hidden'));
+            // 1. Sembunyikan semua tab
+            const contents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.add('hidden');
+                contents[i].classList.remove('block');
+            }
 
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active-tab');
-                btn.classList.add('text-slate-400');
-            });
+            // 2. Reset semua warna tombol ke default
+            const buttons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active-tab');
+                buttons[i].classList.add('bg-slate-800', 'text-slate-300');
+            }
 
-            const selectedTab = document.getElementById('tab-' + tabName);
-            if (selectedTab) selectedTab.classList.remove('hidden');
+            // 3. Tampilkan tab yang diklik
+            const targetContent = document.getElementById('tab-' + tabName);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+                targetContent.classList.add('block');
+            }
 
-            const selectedBtn = document.getElementById('btn-' + tabName);
-            if (selectedBtn) {
-                selectedBtn.classList.add('active-tab');
-                selectedBtn.classList.remove('text-slate-400');
+            // 4. Ubah warna tombol yang aktif
+            const targetBtn = document.getElementById('btn-' + tabName);
+            if (targetBtn) {
+                targetBtn.classList.add('active-tab');
+                targetBtn.classList.remove('bg-slate-800', 'text-slate-300');
             }
         }
 
-        // Fungsi Salin Teks ke Clipboard
+        // Fungsi Salin Teks
         function copyScript(scriptText, btnElement) {
             navigator.clipboard.writeText(scriptText).then(() => {
                 const originalText = btnElement.innerText;
@@ -230,7 +240,7 @@
             });
         }
 
-        // Logic AI Assistant - Auto Database Search + Copy Button
+        // Logic AI Assistant
         function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const messagesContainer = document.getElementById('chat-messages');
@@ -238,7 +248,7 @@
 
             if (!text) return;
 
-            // Render User Message
+            // Render Pesan User
             const userMsg = document.createElement('div');
             userMsg.className = "flex items-start justify-end space-x-2";
             userMsg.innerHTML = `
@@ -251,7 +261,7 @@
             input.value = '';
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Pencarian Otomatis oleh AI Assistant
+            // Pencarian Otomatis Bot
             setTimeout(() => {
                 const botMsg = document.createElement('div');
                 botMsg.className = "flex items-start space-x-2";
@@ -259,7 +269,6 @@
                 const lowerText = text.toLowerCase();
                 let replyContent = "";
 
-                // Database Script 1: Map +1 Strength to Grow Your Arm
                 if (lowerText.includes('lengan') || lowerText.includes('kekuatan') || lowerText.includes('+1 strength') || lowerText.includes('grow arm')) {
                     const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/1StrengthtoGrowYourArm"))()`;
                     replyContent = `
@@ -267,38 +276,35 @@
                         <div class="flex flex-wrap gap-1.5 my-2">
                             <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
                             <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">⚡ AUTO TRAIN</span>
-                            <span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🛡️ SAFE BYPASS</span>
                         </div>
                         <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-700 flex items-center justify-between gap-2">
                             <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
                                 ${scriptCode}
                             </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
+                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
                                 📋 Copy
                             </button>
                         </div>
                     `;
                 } 
-                // Database Script 2: Blox Fruits
                 else if (lowerText.includes('blox fruit') || lowerText.includes('blox')) {
                     const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BloxFruits"))()`;
                     replyContent = `
                         <b>Script ditemukan untuk: Blox Fruits</b>
                         <div class="flex flex-wrap gap-1.5 my-2">
                             <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🌾 AUTO FARM SEA 1-3</span>
+                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🌾 AUTO FARM</span>
                         </div>
                         <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-700 flex items-center justify-between gap-2">
                             <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
                                 ${scriptCode}
                             </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
+                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
                                 📋 Copy
                             </button>
                         </div>
                     `;
                 } 
-                // Database Script 3: Blade Ball
                 else if (lowerText.includes('blade ball') || lowerText.includes('blade')) {
                     const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BladeBall"))()`;
                     replyContent = `
@@ -311,23 +317,22 @@
                             <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
                                 ${scriptCode}
                             </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
+                            <button type="button" onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
                                 📋 Copy
                             </button>
                         </div>
                     `;
                 }
-                // Jika script tidak ditemukan
                 else {
                     replyContent = `
                         <b>Mohon maaf script belum ada di web maupun TikTok dan YouTube.</b> 🙏<br><br>
-                        Game/map yang kamu cari belum tersedia di database terverifikasi ASISTEN KAKEK_VIPP. Tim kami akan segera memperbarui pencarian script untuk map tersebut!
+                        Game/map yang kamu cari belum tersedia di database terverifikasi ASISTEN KAKEK_VIPP.
                     `;
                 }
 
                 botMsg.innerHTML = `
                     <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                    <div class="bg-slate-700/80 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
+                    <div class="bg-slate-700 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
                         ${replyContent}
                     </div>
                 `;
@@ -336,5 +341,6 @@
             }, 600);
         }
 
-        // Jalankan pencarian via tombol Enter
-        document.getElementById('chat-input')?.addEventListene
+        // Enter key listener
+        document.getElementById('chat-input')?.addEventListener('keypress', function (e) {
+            if (e.key ==
