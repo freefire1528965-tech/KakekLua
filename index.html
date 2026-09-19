@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KakekLua Management</title>
+    <title>KakekLua Management - Pro Script Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,334 +12,176 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            card: '#1e293b',
-                            accent: '#3b82f6'
-                        }
+                        darker: '#090d16',
+                        cardbg: '#111827',
+                        accent: '#10b981',
                     }
                 }
             }
         }
     </script>
+    <!-- FontAwesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        .active-tab {
-            background-color: rgba(59, 130, 246, 0.25) !important;
-            color: #60a5fa !important;
-            border-left: 3px solid #3b82f6;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-darker text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
 
-    <!-- Header Top Bar -->
-    <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold text-blue-500">⚡ KakekLua</span>
-        </div>
-        <div class="flex items-center space-x-3">
-            <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-semibold">
-                FREE PLAN
-            </span>
-            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs">
-                U
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800/60 bg-darker/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-900/30 text-black font-bold">
+                    <i class="fa-solid fa-code text-base"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base tracking-wide bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">KakekV1 Hub</h1>
+                    <p class="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Executor Script Hub Management</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    DELTA READY
+                </span>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Bar (Mobile Scrollable) -->
-    <nav class="bg-slate-900/90 border-b border-slate-800 p-2 flex overflow-x-auto gap-2">
-        <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active-tab flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap">
-            <span>📊</span> <span>Overview</span>
-        </button>
-        <button onclick="switchTab('assistant')" id="btn-assistant" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
-            <span>🤖</span> <span>AI Assistant</span>
-        </button>
-        <button onclick="switchTab('hwid')" id="btn-hwid" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
-            <span>🔑</span> <span>HWID Reset</span>
-        </button>
-        <button onclick="switchTab('maps')" id="btn-maps" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
-            <span>🗺️</span> <span>Supported Maps</span>
-        </button>
-        <button onclick="switchTab('scripts')" id="btn-scripts" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
-            <span>📜</span> <span>Script Loader</span>
-        </button>
-        <button onclick="switchTab('settings')" id="btn-settings" class="tab-btn flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap text-slate-400">
-            <span>⚙️</span> <span>Account Settings</span>
-        </button>
-    </nav>
-
-    <!-- Content Container -->
-    <main class="flex-1 p-4 space-y-4">
-
-        <!-- TAB 1: OVERVIEW -->
-        <section id="tab-overview" class="tab-content space-y-4">
-            <h1 class="text-lg font-bold">Dashboard Overview</h1>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
-                    <p class="text-[10px] text-slate-400">Status Akun</p>
-                    <p class="text-sm font-bold text-amber-400 mt-1">Free Tier</p>
-                </div>
-                <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
-                    <p class="text-[10px] text-slate-400">Sisa Reset HWID</p>
-                    <p class="text-sm font-bold text-blue-400 mt-1">3x / Bulan</p>
-                </div>
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+        
+        <!-- Search & Control Box -->
+        <div class="bg-cardbg/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+            <label class="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+                <i class="fa-solid fa-magnifying-glass text-emerald-400 mr-1.5"></i> Cari Game / Script Hub
+            </label>
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Ketik nama game (cth: Blox Fruits, Race for Egg)..." 
+                    class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium">
             </div>
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
-                <h2 class="text-xs font-semibold text-blue-400">Selamat Datang di KakekLua Management</h2>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    Tanyakan nama game/map Roblox yang ingin kamu cari script-nya ke AI Assistant di bawah ini!
-                </p>
-            </div>
-        </section>
+        </div>
 
-        <!-- TAB 2: AI SCRIPT ASSISTANT -->
-        <section id="tab-assistant" class="tab-content hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-lg font-bold">AI Script Search Assistant</h1>
-                <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">Auto Copy System</span>
+        <!-- Result Container / Script Cards -->
+        <div id="resultContainer" class="space-y-4">
+            <!-- Default Welcome State -->
+            <div class="bg-cardbg/50 border border-slate-800/80 rounded-2xl p-6 text-center space-y-3">
+                <div class="w-12 h-12 bg-slate-800 rounded-2xl mx-auto flex items-center justify-center text-emerald-400 text-xl">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-200">Hub Siap Digunakan</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto">Ketik nama game di kolom pencarian di atas atau pilih script favorit kamu untuk disalin kodenya.</p>
             </div>
-
-            <!-- Chat Container -->
-            <div class="bg-slate-900 rounded-xl border border-slate-800 flex flex-col h-[420px]">
-                <!-- Chat Messages Area -->
-                <div id="chat-messages" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
-                    <!-- Bot Welcome Message -->
-                    <div class="flex items-start space-x-2">
-                        <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                        <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
-                            <b>HALO! SELAMAT DATANG DI ASISTEN SCRIPT KAKEK_VIPP</b> ⚡<br><br>
-                            SILAHKAN CARI SCRIPT YG KAMU MAU DI ASISTEN KAKEK_VIPP<br>
-                            TERIMAKASIH! 😁
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chat Input Area -->
-                <div class="p-2 border-t border-slate-800 bg-slate-950/50 flex space-x-2">
-                    <input type="text" id="chat-input" placeholder="Minta script map apa saja..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
-                    <button onclick="sendChatMessage()" class="bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium shrink-0">
-                        Cari Script
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: HWID RESET -->
-        <section id="tab-hwid" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">HWID Management</h1>
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                <p class="text-xs text-slate-400">HWID Terdaftar:</p>
-                <input type="text" value="DEV-893A-X902-KLUA" readonly class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-300">
-                <button onclick="alert('Fitur Reset HWID akan aktif setelah Backend & Database dibuat!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Reset HWID Sekarang
-                </button>
-            </div>
-        </section>
-
-        <!-- TAB 4: SUPPORTED MAPS -->
-        <section id="tab-maps" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Supported Maps & Scripts</h1>
-            <div class="space-y-2">
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <span class="text-xs font-medium">+1 Kekuatan Menumbuhkan Lengan</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <span class="text-xs font-medium">Blox Fruits (Sea 1-3)</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <span class="text-xs font-medium">Blade Ball (Auto Parry)</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Ready</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 5: SCRIPT LOADER -->
-        <section id="tab-scripts" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Script Loader</h1>
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                <p class="text-xs text-slate-400">Pilih Script Lua:</p>
-                <select class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
-                    <option>+1 Strength to Grow Your Arm Script (Keyless)</option>
-                    <option>Blade Ball Auto Parry Hub</option>
-                    <option>Blox Fruits All-In-One Hub</option>
-                </select>
-                <button onclick="alert('Script Loader akan dihubungkan ke Executor!')" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Load Script
-                </button>
-            </div>
-        </section>
-
-        <!-- TAB 6: ACCOUNT SETTINGS -->
-        <section id="tab-settings" class="tab-content hidden space-y-4">
-            <h1 class="text-lg font-bold">Account Settings</h1>
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Username</label>
-                    <input type="text" value="UserDemo" readonly class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400">
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Ganti Password</label>
-                    <input type="password" placeholder="Password Baru" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
-                </div>
-                <button onclick="alert('Simpan password berhasil!')" class="w-full bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs">
-                    Simpan Perubahan
-                </button>
-            </div>
-        </section>
+        </div>
 
     </main>
 
-    <!-- JavaScript Navigasi & AI Assistant Logic -->
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/60 bg-darker py-4 text-center text-xs text-slate-500">
+        <p>KakekLua Hub Management © 2026 • Powered by Delta Executor</p>
+    </footer>
+
+    <!-- Script Logic -->
     <script>
-        function switchTab(tabName) {
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.add('hidden'));
+        const searchInput = document.getElementById('searchInput');
+        const resultContainer = document.getElementById('resultContainer');
 
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active-tab');
-                btn.classList.add('text-slate-400');
-            });
-
-            const selectedTab = document.getElementById('tab-' + tabName);
-            if (selectedTab) selectedTab.classList.remove('hidden');
-
-            const selectedBtn = document.getElementById('btn-' + tabName);
-            if (selectedBtn) {
-                selectedBtn.classList.add('active-tab');
-                selectedBtn.classList.remove('text-slate-400');
+        // Data database script ala Tora IsMe
+        const scriptsDB = [
+            {
+                keyword: ['race for egg', 'egg', 'telur'],
+                title: 'Race for Egg - Auto Farm & Ulti Script',
+                status: 'PATCHED / TESTING',
+                statusColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                badges: ['KEYLESS', 'AUTO FARM'],
+                code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/freefire1528965-tech/KakekLua/main/scripts/RaceForEgg.lua"))()`
+            },
+            {
+                keyword: ['blox fruits', 'fruit', 'bloxfruit'],
+                title: 'Blox Fruits - Hub Pro (Auto Farm & Sea Event)',
+                status: 'WORKING',
+                statusColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                badges: ['KEY SYSTEM', 'AUTO LEVEL', 'ESP'],
+                code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptpastebin/raw/main/BloxFruitsHub"))()`
+            },
+            {
+                keyword: ['pet simulator', 'ps99', 'pet 99'],
+                title: 'Pet Simulator 99 - Auto Dig & Collect Gems',
+                status: 'WORKING',
+                statusColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                badges: ['KEYLESS', 'AUTO FARM'],
+                code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptpastebin/raw/main/PS99AutoFarm"))()`
             }
-        }
+        ];
 
-        // Fungsi Salin Teks ke Clipboard
-        function copyScript(scriptText, btnElement) {
-            navigator.clipboard.writeText(scriptText).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = "✅ Copied!";
-                btnElement.classList.replace("bg-blue-600", "bg-emerald-600");
-                
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.classList.replace("bg-emerald-600", "bg-blue-600");
-                }, 2000);
-            }).catch(err => {
-                alert("Gagal menyalin, salin secara manual.");
-            });
-        }
+        function renderCards(filterText = '') {
+            const query = filterText.toLowerCase().trim();
+            const filtered = scriptsDB.filter(item => 
+                item.keyword.some(k => k.includes(query)) || item.title.toLowerCase().includes(query)
+            );
 
-        // Logic AI Assistant - Auto Database Search + Copy Button
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const messagesContainer = document.getElementById('chat-messages');
-            const text = input.value.trim();
-
-            if (!text) return;
-
-            // Render User Message
-            const userMsg = document.createElement('div');
-            userMsg.className = "flex items-start justify-end space-x-2";
-            userMsg.innerHTML = `
-                <div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-white">
-                    ${text}
-                </div>
-                <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0">U</div>
-            `;
-            messagesContainer.appendChild(userMsg);
-            input.value = '';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Pencarian Otomatis oleh AI Assistant
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = "flex items-start space-x-2";
-
-                const lowerText = text.toLowerCase();
-                let replyContent = "";
-
-                // Database Script 1: Map +1 Strength to Grow Your Arm
-                if (lowerText.includes('lengan') || lowerText.includes('kekuatan') || lowerText.includes('+1 strength') || lowerText.includes('grow arm')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/1StrengthtoGrowYourArm"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: +1 Strength to Grow Your Arm</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">⚡ AUTO TRAIN</span>
-                            <span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🛡️ SAFE BYPASS</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-800 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                } 
-                // Database Script 2: Blox Fruits
-                else if (lowerText.includes('blox fruit') || lowerText.includes('blox')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BloxFruits"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: Blox Fruits</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🌾 AUTO FARM SEA 1-3</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-800 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                } 
-                // Database Script 3: Blade Ball
-                else if (lowerText.includes('blade ball') || lowerText.includes('blade')) {
-                    const scriptCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/BladeBall"))()`;
-                    replyContent = `
-                        <b>Script ditemukan untuk: Blade Ball</b>
-                        <div class="flex flex-wrap gap-1.5 my-2">
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🔓 KEYLESS</span>
-                            <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">🎯 AUTO PARRY</span>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-lg mt-1 border border-slate-800 flex items-center justify-between gap-2">
-                            <div class="font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
-                                ${scriptCode}
-                            </div>
-                            <button onclick="copyScript('${scriptCode}', this)" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded shrink-0 transition-colors">
-                                📋 Copy
-                            </button>
-                        </div>
-                    `;
-                }
-                // Jika script tidak ditemukan
-                else {
-                    replyContent = `
-                        <b>Mohon maaf script belum ada di web maupun TikTok dan YouTube.</b> 🙏<br><br>
-                        Game/map yang kamu cari belum tersedia di database terverifikasi ASISTEN KAKEK_VIPP. Tim kami akan segera memperbarui pencarian script untuk map tersebut!
-                    `;
-                }
-
-                botMsg.innerHTML = `
-                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[10px] shrink-0">🤖</div>
-                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-slate-200">
-                        ${replyContent}
+            if (filtered.length === 0) {
+                resultContainer.innerHTML = `
+                    <div class="bg-cardbg/50 border border-slate-800 rounded-2xl p-6 text-center space-y-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-2xl mb-1"></i>
+                        <h3 class="font-bold text-sm text-slate-200">Script Tidak Ditemukan</h3>
+                        <p class="text-xs text-slate-400">Coba kata kunci lain (contoh: "Blox Fruits" atau "Egg").</p>
                     </div>
                 `;
-                messagesContainer.appendChild(botMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 600);
+                return;
+            }
+
+            resultContainer.innerHTML = filtered.map(item => `
+                <div class="bg-cardbg border border-slate-800/80 rounded-2xl p-4 shadow-xl space-y-3 transition-all hover:border-slate-700">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.statusColor}">${item.status}</span>
+                            <h2 class="font-bold text-sm text-slate-100 mt-1.5">${item.title}</h2>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${item.badges.map(b => `<span class="bg-slate-800/80 text-slate-300 border border-slate-700/60 text-[9px] px-2 py-0.5 rounded font-semibold">${b}</span>`).join('')}
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between gap-2">
+                        <div class="font-mono text-[11px] text-emerald-400 overflow-x-auto whitespace-nowrap p-1 select-all flex-1">
+                            ${item.code}
+                        </div>
+                        <button onclick="copyScript(this, \`${item.code}\`)" class="bg-emerald-600 hover:bg-emerald-500 text-black font-bold text-xs px-3 py-2 rounded-lg shrink-0 transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-900/20 active:scale-95">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Jalankan pencarian via tombol Enter
-        document.getElementById('chat-input')?.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') sendChatMessage();
+        searchInput.addEventListener('input', (e) => {
+            renderCards(e.target.value);
         });
+
+        function copyScript(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+                btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+                btn.classList.add('bg-teal-500', 'text-black');
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-teal-500', 'text-black');
+                    btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+                }, 2000);
+            });
+        }
+
+        // Load awal tampilkan semua
+        renderCards();
     </script>
 </body>
 </html>
