@@ -1,5 +1,5 @@
 // ==========================================
-// 1. FUNGSI DETEKSI MODE PESAN (REFERENSI UTAMA)
+// 1. FUNGSI DETEKSI MODE PESAN
 // ==========================================
 function getMessageMode(message) {
     const text = String(message || "").trim();
@@ -30,70 +30,45 @@ function getMessageMode(message) {
     };
 }
 
-
 // ==========================================
-// 2. INTEGRASI KE DALAM HANDLER KIRIM PESAN UTAMA
+// 2. INTEGRASI KE EVENT KIRIM PESAN
 // ==========================================
-// (Sesuaikan nama fungsi 'handleUserMessage' atau event listener tombol kirim Anda yang sudah ada)
-
-async function handleUserMessage(userInputText) {
+// Panggil fungsi ini saat user menekan tombol Kirim / Enter
+async function handleUserSend(rawInputText) {
     try {
-        // A. Validasi input kosong
-        if (!userInputText || !userInputText.trim()) return;
+        if (!rawInputText || !rawInputText.trim()) return;
 
-        // B. Tampilkan pesan user ke UI (Gunakan fungsi append/render chat yang sudah ada di project Anda)
-        // Contoh: appendUserMessageToUI(userInputText);
+        // Evaluasi pesan menggunakan fungsi pembatas trigger
+        const evaluated = getMessageMode(rawInputText);
 
-        // C. Evaluasi mode pesan menggunakan fungsi getMessageMode
-        const evaluated = getMessageMode(userInputText);
-
-        // D. Tentukan prompt atau perilaku berdasarkan mode
-        let finalApiPayload = "";
+        let payloadToSend = "";
 
         if (evaluated.mode === "MAP_EMPTY") {
-            // Aturan 7: Jika user menulis 'map:' tanpa nama map
-            // Gunakan fungsi pengiriman pesan bot yang sudah ada di project Anda
-            // Contoh: appendBotMessageToUI("Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
+            // Jika user hanya mengetik "map:" tanpa nama map
+            if (typeof appendBotMessageToUI === "function") {
+                appendBotMessageToUI("Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
+            }
             return;
         } 
-        
         else if (evaluated.mode === "MAP_SCRIPT") {
-            // Masuk ke mode pembuatan script khusus untuk map tersebut
-            finalApiPayload = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
+            // Masuk mode script khusus map
+            payloadToSend = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
         } 
-        
         else {
-            // Mode CHAT normal: Jawab natural layaknya AI chat biasa (Aturan 1, 2, 4)
-            finalApiPayload = evaluated.message;
+            // Chat normal (mencegah bot langsung ngide bikin script kalau cuma ngechat biasa)
+            payloadToSend = evaluated.message;
         }
 
-        // E. Panggil API AI yang SUDAH ADA di project Anda dengan fallback aman (Aturan 10, 14, 15)
-        // Pastikan menggunakan fungsi API lama Anda agar tidak mengubah endpoint atau key
-        await callExistingAIApi(finalApiPayload);
+        // Lanjutkan ke fungsi API AI yang sudah ada di project kamu
+        if (typeof sendToExistingAPI === "function") {
+            await sendToExistingAPI(payloadToSend);
+        }
 
-    } catch (error) {
-        // Aturan 15: Pertahankan fallback agar pesan bot tetap bisa ditampilkan jika terjadi error
-        console.error("Terjadi kesalahan pada sistem chat KakekLua:", error);
-        
+    } catch (err) {
+        console.error("Terjadi kesalahan pada sistem:", err);
+        // Fallback aman agar bot tidak crash / layar putih
         if (typeof appendBotMessageToUI === "function") {
-            appendBotMessageToUI("Wah, sistem lagi sedikit kendala nih bro. Coba ulangi pesan kamu ya!");
+            appendBotMessageToUI("Maaf bro, terjadi sedikit kendala pada sistem. Coba ulangi pesan kamu ya!");
         }
-    }
-}
-
-
-// ==========================================
-// 3. CONTOH / WRAPPER KE API LAMA ANDA
-// ==========================================
-async function callExistingAIApi(promptText) {
-    try {
-        // Ganti baris di bawah ini dengan pemanggilan fetch/API AI aslinya yang sudah ada di project KakekLua Anda
-        // Contoh: const response = await fetch(API_URL, { ... });
-        
-        // Pastikan respons dari AI dimasukkan ke fungsi bubble chat bot yang sudah ada
-        // Contoh: appendBotMessageToUI(aiResponseText);
-        
-    } catch (apiError) {
-        throw apiError; // Lempar ke blok catch utama untuk memicu fallback
     }
 }
