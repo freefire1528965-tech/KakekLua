@@ -1,43 +1,31 @@
-// Contoh fungsi penanganan pesan masuk pada AI Assistant
-function handleUserMessage(input) {
-    const cleanInput = input.trim().toLowerCase();
-    
-    // Daftar kata sapaan atau percakapan umum
-    const greetings = ["halo", "hai", "p", "assalamualaikum", "selamat pagi", "selamat malam", "hi"];
-    
-    // 1. Jika pengguna mengirim sapaan
-    if (greetings.includes(cleanInput)) {
+function handleAIResponse(userText) {
+    const text = userText.toLowerCase().trim();
+
+    // 1. Deteksi kalau cuma ngobrol / basa-basi / sapaan
+    const chatKeywords = ["halo", "hai", "p", "wkwk", "woy", "assalamualaikum", "test", "pagi", "malam", "min", "bang", "bos"];
+    const isOnlyChat = chatKeywords.some(word => text === word || text.startsWith(word + " "));
+
+    // Kalau teksnya mengandung unsur ngobrol santai / curhat singkat
+    if (isOnlyChat || text.length < 5 && !isGameName(text)) {
         return {
             type: "chat",
-            message: "Halo! Selamat datang di Asisten KAKEK_VIPP ⚡. Silakan ketik nama game Roblox yang ingin Anda cari skripnya, dan saya akan dengan senang hati membantu menemukannya."
+            text: "Wkwk santai bro! Mau ngobrol dulu apa mau cari script game apa nih hari ini? Ketik aja nama gamenya kalau udah siap ya!"
         };
     }
-    
-    // 2. Jika input menanyakan bantuan / fitur
-    else if (cleanInput.includes("tolong") || cleanInput.includes("cara") || cleanInput.includes("fitur")) {
+
+    // 2. Kalau beneran mau cari script game
+    let scriptResult = searchInDatabase(text);
+    if (scriptResult) {
+        return {
+            type: "script",
+            gameName: userText,
+            loadstring: scriptResult.url
+        };
+    } else {
         return {
             type: "chat",
-            message: "Tentu! Anda bisa memasukkan nama game simulator atau map Roblox tertentu untuk mendapatkan skrip otomatisasi seperti auto farm atau teleport."
+            text: `Duh, kayaknya script buat "${userText}" belum ada deh. Coba ketik nama game lain yang bener wkwk!`
         };
-    }
-    
-    // 3. Jika input adalah nama game (Pencarian Skrip)
-    else {
-        // Cek apakah game tersedia di database Anda
-        let scriptData = searchScriptInDatabase(cleanInput);
-        
-        if (scriptData) {
-            return {
-                type: "script",
-                gameName: input,
-                tags: scriptData.tags, // contoh: ["KEYLESS", "AUTO FARM"]
-                loadstring: scriptData.url
-            };
-        } else {
-            return {
-                type: "chat",
-                message: `Mohon maaf, skrip untuk game "${input}" saat ini belum tersedia di database KAKEK_VIPP. Silakan coba cari nama game lain.`
-            };
-        }
     }
 }
+        
