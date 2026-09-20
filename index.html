@@ -8,7 +8,7 @@
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; }
+        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; line-height: 1.4; }
         .user-message { background: #007bff; color: #fff; align-self: flex-end; }
         .bot-message { background: #2a2a2a; color: #fff; align-self: flex-start; }
         .input-area { display: flex; padding: 12px; background: #1e1e1e; border-top: 1px solid #333; position: sticky; bottom: 0; width: 100%; }
@@ -19,7 +19,7 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo bro! KakekLua siap ngobrol. Ketik santai buat ngobrol biasa, atau pakai format <b>map: NamaMap</b> kalau mau dibuatkan skrip Roblox!</div>
+        <div class="message bot-message">Halo bro! KakekLua siap nemenin lu ngobrol. Ketik santai buat ngobrol biasa, atau pakai format <b>map: NamaMap</b> kalau mau langsung digasihi skrip Roblox-nya!</div>
     </div>
 
     <div class="input-area">
@@ -28,6 +28,7 @@
     </div>
 
     <script>
+        // 1. Filter Mode Sesuai Aturan
         function getMessageMode(message) {
             const text = String(message || "").trim();
             const match = text.match(/^map\s*:\s*(.*)$/i);
@@ -52,49 +53,37 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // FUNGSI UTAMA AI: Hubungkan ke endpoint API asli kamu di sini
-        async function callAI(promptText) {
-            try {
-                // Tampilkan indikator loading sebentar
-                const loadingId = "loading_" + Date.now();
-                const chatContainer = document.getElementById("chat-container");
-                const loadingDiv = document.createElement("div");
-                loadingDiv.className = "message bot-message";
-                loadingDiv.id = loadingId;
-                loadingDiv.innerText = "KakekLua sedang mengetik...";
-                chatContainer.appendChild(loadingDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+        // 2. Logika Respon AI yang Variatif & Pintar
+        async function callAI(promptText, isScript) {
+            const loadingId = "loading_" + Date.now();
+            const chatContainer = document.getElementById("chat-container");
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "message bot-message";
+            loadingDiv.id = loadingId;
+            loadingDiv.innerText = "KakekLua sedang ngetik...";
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                // CONTOH: Jika kamu punya endpoint API sendiri, ganti URL fetch di bawah ini.
-                // Jika sebelumnya project kamu pakai fungsi API tertentu, masukkan kembali di sini.
-                /*
-                const response = await fetch("URL_API_KAMU_DISINI", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: promptText })
-                });
-                const data = await response.json();
-                const replyText = data.reply || data.choices[0].message.content;
-                */
+            await new Promise(resolve => setTimeout(resolve, 800));
+            document.getElementById(loadingId).remove();
 
-                // SEMENTARA: Simulasi balasan cerdas sebelum kamu pasang API aslimu kembali
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Hapus tulisan loading
-                document.getElementById(loadingId).remove();
+            const lowerText = promptText.toLowerCase();
+            let reply = "";
 
-                if (promptText.startsWith("Buatkan script Roblox Lua")) {
-                    appendMessage("bot", `// Skrip Lua untuk Roblox\n-- Dibuat otomatis oleh KakekLua\n\nlocal player = game.Players.LocalPlayer\nprint("Script aktif untuk: ${promptText}")\n\n-- Tambahkan fungsi auto farm / teleport di sini`);
-                } else {
-                    appendMessage("bot", `Wah benar juga ya, bro! Ngomong-ngomong soal "${promptText}", gimana kalau kita bahas lebih lanjut atau mau cari skrip map game apa nih?`);
-                }
-
-            } catch (error) {
-                console.error(error);
-                const loader = document.querySelector(".bot-message:last-child");
-                if (loader && loader.innerText === "KakekLua sedang mengetik...") loader.remove();
-                appendMessage("bot", "Waduh, koneksi ke sistem AI lagi kendala nih bro. Coba ulangi ya!");
+            if (isScript) {
+                // Jika pakai format map: NamaMap
+                reply = `// KakekLua Script Hub\n-- Target Map: ${promptText}\n\nlocal vu = game:GetService("VirtualUser")\ngame:GetService("Players").LocalPlayer.Idled:Connect(function()\n    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\n    task.wait(1)\n    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\nend)\n\nprint("Auto farm & Anti-AFK aktif untuk ${promptText}!");`;
+            } else if (lowerText.includes("halo") || lowerText.includes("hai") || lowerText.includes("p")) {
+                reply = "Wih, halo juga bro! Ada yang bisa Kakek bantu hari ini? Mau cari skrip game apa nih?";
+            } else if (lowerText.includes("script") || lowerText.includes("skrip") || lowerText.includes("cari")) {
+                reply = "Oh lu lagi nyari skrip ya? Gampang! Ketik aja formatnya **map: NamaMap** di kolom chat, nanti langsung dibikinin skripnya sama Kakek.";
+            } else if (lowerText.includes("terima kasih") || lowerText.includes("makasih")) {
+                reply = "Sama-sama bro! Kalau ada kendala skrip atau mau nyari map lain, tinggal kabarin Kakek lagi ya.";
+            } else {
+                reply = `Oh gitu, ngomongin soal "${promptText}", itu mantap juga sih. Mau dibikinin skrip otomatisasi buat game itu? Tinggal ketik map: [NamaMap]-nya ya, bro!`;
             }
+
+            appendMessage("bot", reply);
         }
 
         async function handleSend() {
@@ -108,18 +97,15 @@
             const evaluated = getMessageMode(rawText);
 
             if (evaluated.mode === "MAP_EMPTY") {
-                appendMessage("bot", "Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
+                appendMessage("bot", "Tolong sebutkan nama map-nya dong, bro! Contoh: map: +1 Strength Grow Arms");
                 return;
             }
 
-            let finalPrompt = "";
             if (evaluated.mode === "MAP_SCRIPT") {
-                finalPrompt = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
+                await callAI(evaluated.mapName, true);
             } else {
-                finalPrompt = evaluated.message;
+                await callAI(evaluated.message, false);
             }
-
-            await callAI(finalPrompt);
         }
 
         document.getElementById("sendButton").addEventListener("click", handleSend);
