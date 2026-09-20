@@ -1,52 +1,10 @@
-Perbaiki LOGIC CHAT KakekLua saya. JANGAN membuat ulang project dan JANGAN menghapus atau mengganti UI, CSS, HTML, desain, API, atau fitur yang sudah berjalan.
-
-Masalah:
-Bot sekarang terlalu cepat mengirim script. Saya ingin bot berperilaku seperti AI chat yang normal.
-
-ATURAN:
-
-1. Semua percakapan biasa harus dijawab secara natural oleh AI.
-2. Jangan membuat script hanya karena user mengatakan:
-
-   * "script"
-   * "kode"
-   * "map"
-   * nama game
-     Kata-kata tersebut sendiri bukan trigger.
-3. Hanya format `map:` yang menjadi trigger khusus.
-4. Contoh:
-   User: "halo bro"
-   Bot: jawab normal.
-
-   User: "aku lagi cari script"
-   Bot: jawab seperti AI biasa dan lanjut ngobrol.
-
-   User: "gimana cara bikin GUI?"
-   Bot: jawab pertanyaan tersebut.
-
-   User: "map: NamaMap"
-   Bot: masuk ke mode pembuatan script untuk map tersebut.
-5. `map:` harus berada di awal pesan, boleh ada spasi:
-   `map: NamaMap`
-   `map : NamaMap`
-6. Jika user hanya mengatakan `map`, jangan masuk mode script.
-7. Jika user menulis `map:` tetapi tidak memberikan nama map, tanyakan nama map.
-8. Jangan merusak chat history/context yang sudah ada.
-9. Jangan mengubah tampilan UI.
-10. Jangan menghapus fungsi AI/API yang sudah ada.
-11. Jangan mengganti nama variabel atau fungsi yang sudah dipakai kecuali benar-benar diperlukan.
-12. Jangan membuat file baru jika tidak diperlukan.
-13. Sebelum mengubah kode, baca kode project saya terlebih dahulu dan sesuaikan dengan struktur yang sudah ada.
-14. Jika sudah ada fungsi untuk mengirim pesan, gunakan fungsi tersebut. Jangan membuat sistem chat kedua.
-15. Jika ada error, pertahankan fallback agar pesan bot tetap bisa ditampilkan.
-
-Gunakan logika berikut sebagai REFERENSI, bukan untuk mengganti seluruh project:
-
-```js
+// ==========================================
+// 1. FUNGSI DETEKSI MODE PESAN (REFERENSI UTAMA)
+// ==========================================
 function getMessageMode(message) {
     const text = String(message || "").trim();
 
-    // Hanya "map:" di awal pesan yang menjadi trigger
+    // Hanya "map:" di awal pesan yang menjadi trigger khusus
     const match = text.match(/^map\s*:\s*(.*)$/i);
 
     if (match) {
@@ -65,25 +23,77 @@ function getMessageMode(message) {
         };
     }
 
-    // Semua pesan lainnya = percakapan normal
+    // Semua pesan lainnya = percakapan normal AI
     return {
         mode: "CHAT",
         message: text
     };
 }
-```
 
-Kemudian integrasikan fungsi tersebut ke sistem chat KakekLua yang SUDAH ADA.
 
-PENTING:
+// ==========================================
+// 2. INTEGRASI KE DALAM HANDLER KIRIM PESAN UTAMA
+// ==========================================
+// (Sesuaikan nama fungsi 'handleUserMessage' atau event listener tombol kirim Anda yang sudah ada)
 
-* Jangan mengganti HTML/CSS.
-* Jangan menghapus elemen chat.
-* Jangan menghapus bubble pesan bot.
-* Jangan mengganti API AI.
-* Jangan membuat UI baru.
-* Jangan menulis ulang seluruh project.
-* Ubah hanya logic yang diperlukan.
-* Setelah selesai, berikan saya KODE FINAL LENGKAP yang sudah terintegrasi dengan project saya, bukan contoh kode terpisah.
-* Pastikan kode tidak menghasilkan layar putih atau JavaScript error.
-* Jika ada bagian project saya yang tidak boleh diubah, pertahankan persis seperti sebelumnya.
+async function handleUserMessage(userInputText) {
+    try {
+        // A. Validasi input kosong
+        if (!userInputText || !userInputText.trim()) return;
+
+        // B. Tampilkan pesan user ke UI (Gunakan fungsi append/render chat yang sudah ada di project Anda)
+        // Contoh: appendUserMessageToUI(userInputText);
+
+        // C. Evaluasi mode pesan menggunakan fungsi getMessageMode
+        const evaluated = getMessageMode(userInputText);
+
+        // D. Tentukan prompt atau perilaku berdasarkan mode
+        let finalApiPayload = "";
+
+        if (evaluated.mode === "MAP_EMPTY") {
+            // Aturan 7: Jika user menulis 'map:' tanpa nama map
+            // Gunakan fungsi pengiriman pesan bot yang sudah ada di project Anda
+            // Contoh: appendBotMessageToUI("Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
+            return;
+        } 
+        
+        else if (evaluated.mode === "MAP_SCRIPT") {
+            // Masuk ke mode pembuatan script khusus untuk map tersebut
+            finalApiPayload = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
+        } 
+        
+        else {
+            // Mode CHAT normal: Jawab natural layaknya AI chat biasa (Aturan 1, 2, 4)
+            finalApiPayload = evaluated.message;
+        }
+
+        // E. Panggil API AI yang SUDAH ADA di project Anda dengan fallback aman (Aturan 10, 14, 15)
+        // Pastikan menggunakan fungsi API lama Anda agar tidak mengubah endpoint atau key
+        await callExistingAIApi(finalApiPayload);
+
+    } catch (error) {
+        // Aturan 15: Pertahankan fallback agar pesan bot tetap bisa ditampilkan jika terjadi error
+        console.error("Terjadi kesalahan pada sistem chat KakekLua:", error);
+        
+        if (typeof appendBotMessageToUI === "function") {
+            appendBotMessageToUI("Wah, sistem lagi sedikit kendala nih bro. Coba ulangi pesan kamu ya!");
+        }
+    }
+}
+
+
+// ==========================================
+// 3. CONTOH / WRAPPER KE API LAMA ANDA
+// ==========================================
+async function callExistingAIApi(promptText) {
+    try {
+        // Ganti baris di bawah ini dengan pemanggilan fetch/API AI aslinya yang sudah ada di project KakekLua Anda
+        // Contoh: const response = await fetch(API_URL, { ... });
+        
+        // Pastikan respons dari AI dimasukkan ke fungsi bubble chat bot yang sudah ada
+        // Contoh: appendBotMessageToUI(aiResponseText);
+        
+    } catch (apiError) {
+        throw apiError; // Lempar ke blok catch utama untuk memicu fallback
+    }
+}
