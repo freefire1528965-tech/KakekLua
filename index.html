@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KakekLua AI Hub</title>
     <style>
-        /* Desain standar agar UI tidak rusak */
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
@@ -19,7 +18,7 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo! KakekLua siap membantu kamu ngobrol atau mencari skrip Roblox. Ada yang bisa dibantu?</div>
+        <div class="message bot-message">Halo bro! KakekLua siap nemenin kamu ngobrol atau bikinin script Roblox. Ketik santai buat ngobrol, atau gunakan format <b>map: NamaMap</b> kalau mau dibuatkan skripnya!</div>
     </div>
 
     <div class="input-area">
@@ -28,7 +27,7 @@
     </div>
 
     <script>
-        // 1. Fungsi Filter Mode Pesan
+        // 1. Fungsi Logika Pemilah Pesan (Sesuai Aturan Kamu)
         function getMessageMode(message) {
             const text = String(message || "").trim();
             const match = text.match(/^map\s*:\s*(.*)$/i);
@@ -41,6 +40,7 @@
                 return { mode: "MAP_SCRIPT", mapName };
             }
 
+            // Pesan biasa akan masuk ke mode chat normal
             return { mode: "CHAT", message: text };
         }
 
@@ -54,30 +54,35 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // 3. Fungsi Panggil AI API (Bisa disesuaikan dengan API lama kamu)
-        async function callAI(promptText) {
+        // 3. Fungsi Komunikasi ke AI / API
+        async function callAI(promptText, isScriptMode) {
             try {
-                // Simulasi respons normal atau ganti dengan fetch API aslimu
+                // Simulasi respons AI chat normal / script generator
+                // (Kamu bisa mengganti bagian fetch ini dengan endpoint API AI asli yang kamu pakai di project sebelumnya)
                 setTimeout(() => {
-                    appendMessage("bot", "Halo bro! Pesan kamu sudah diterima: \"" + promptText + "\". Ada hal lain yang mau dibahas?");
-                }, 500);
+                    if (isScriptMode) {
+                        appendMessage("bot", `// Script Lua Roblox berhasil dibuat!\n-- Untuk map: ${promptText}\n\nprint("KakekLua Auto Farm Active!");\n-- Masukkan kode otomatisasi di sini.`);
+                    } else {
+                        appendMessage("bot", `Halo bro! Menanggapi: "${promptText}", santai aja, KakekLua siap bantu apa kata lu!`);
+                    }
+                }, 600);
             } catch (error) {
                 console.error(error);
-                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba lagi ya!");
+                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba kirim ulang pesannya ya, bro!");
             }
         }
 
-        // 4. Logika Tombol Kirim
+        // 4. Logika Tombol Kirim Pesan
         async function handleSend() {
             const inputElement = document.getElementById("chatInput");
             const rawText = inputElement.value;
             if (!rawText.trim()) return;
 
-            // Tampilkan pesan user
+            // Tampilkan pesan user ke UI
             appendMessage("user", rawText);
             inputElement.value = "";
 
-            // Evaluasi pesan menggunakan filter
+            // Evaluasi pesan menggunakan fungsi pembatas trigger
             const evaluated = getMessageMode(rawText);
 
             if (evaluated.mode === "MAP_EMPTY") {
@@ -85,17 +90,16 @@
                 return;
             }
 
-            let finalPayload = "";
             if (evaluated.mode === "MAP_SCRIPT") {
-                finalPayload = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
+                // Masuk mode script khusus map
+                await callAI(evaluated.mapName, true);
             } else {
-                finalPayload = evaluated.message;
+                // Mode chat normal (bisa ngobrol biasa tanpa bikin script otomatis)
+                await callAI(evaluated.message, false);
             }
-
-            await callAI(finalPayload);
         }
 
-        // Event Listener Tombol & Enter
+        // Event Listener untuk Tombol Kirim dan Tombol Enter di Keyboard HP/PC
         document.getElementById("sendButton").addEventListener("click", handleSend);
         document.getElementById("chatInput").addEventListener("keypress", (e) => {
             if (e.key === "Enter") handleSend();
