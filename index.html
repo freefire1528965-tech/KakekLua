@@ -1,72 +1,61 @@
-// Database script game kamu (bisa ditambah sesuai kebutuhan)
-const scriptDatabase = {
-    "blox fruits": {
-        name: "Blox Fruits",
-        tags: ["KEYLESS", "AUTO FARM"],
-        url: 'game:HttpGet("https://raw.githubusercontent.com/.../blox_fruits.lua")'
-    },
-    "pet simulator": {
-        name: "Pet Simulator 99",
-        tags: ["KEYLESS", "AUTO COIN"],
-        url: 'game:HttpGet("https://raw.githubusercontent.com/.../petsim99.lua")'
-    },
-    "strength simulator": {
-        name: "+1 Strength Grow Arms",
-        tags: ["KEYLESS", "AUTO FARM"],
-        url: 'game:HttpGet("https://raw.githubusercontent.com/.../strength.lua")'
-    }
-};
-
-function processUserMessage(inputText) {
-    const rawText = inputText.trim();
+function handleAIResponse(userText) {
+    const rawText = userText.trim();
     const lowerText = rawText.toLowerCase();
 
-    // 1. Deteksi apakah kalimat tersebut adalah sapaan atau obrolan santai
-    const casualWords = ["halo", "hai", "p", "woy", "assalamualaikum", "wkwk", "test", "pagi", "malam", "min", "bang", "bos", "terima kasih", "makasih", "buat", "kamu", "siapa"];
-    
-    // Cek apakah kalimat diawali atau hanya berisi kata santai / curhat
-    let isCasualChat = casualWords.some(word => lowerText === word || lowerText.startsWith(word + " "));
-    
-    // Kalau ada kata yang menunjukkan orang ini lagi curhat/ngobrol (bukan nyebut game)
-    if (isCasualChat && !lowerText.includes("script") && !lowerText.includes("game") && !lowerText.includes("map")) {
-        return {
-            type: "chat",
-            text: "Wkwk santai bro! Kalau mau ngobrol silakan, tapi kalau lagi cari skrip game Roblox tertentu, tinggal sebutin aja nama gamenya ya! 😎"
-        };
-    }
+    // 1. Daftar kata kunci game yang beneran ada di database kamu
+    // (Tambahkan nama-nama game Roblox di sini)
+    const validGames = {
+        "blox fruits": {
+            name: "Blox Fruits",
+            tags: ["KEYLESS", "AUTO FARM"],
+            url: 'game:HttpGet("https://raw.githubusercontent.com/.../bloxfruits.lua")'
+        },
+        "pet simulator": {
+            name: "Pet Simulator 99",
+            tags: ["KEYLESS", "AUTO COIN"],
+            url: 'game:HttpGet("https://raw.githubusercontent.com/.../petsim99.lua")'
+        },
+        "strength simulator": {
+            name: "+1 Strength Grow Arms",
+            tags: ["KEYLESS", "AUTO FARM"],
+            url: 'game:HttpGet("https://raw.githubusercontent.com/.../strength.lua")'
+        }
+        // Tambahkan game lain di sini...
+    };
 
-    // 2. Deteksi apakah user secara spesifik nanyain script
-    // Kita cari apakah ada nama game di database yang cocok dengan teks user
-    let foundGameKey = null;
-    for (let key in scriptDatabase) {
-        if (lowerText.includes(key)) {
-            foundGameKey = key;
+    // 2. Cek apakah teks user mengandung salah satu nama game di atas
+    let matchedGameKey = null;
+    for (let gameKey in validGames) {
+        if (lowerText.includes(gameKey)) {
+            matchedGameKey = gameKey;
             break;
         }
     }
 
-    // Kalau ketemu nama gamenya di database
-    if (foundGameKey) {
-        let data = scriptDatabase[foundGameKey];
-        return {
-            type: "script",
-            gameName: data.name,
-            tags: data.tags,
-            loadstring: `game:HttpGet("${data.url}")`
-        };
-    }
-
-    // 3. Kalau user ngetik panjang tapi gak jelas nama gamenya
-    if (lowerText.length > 10 && !lowerText.includes("cari") && !lowerText.includes("minta")) {
+    // 3. JIKA TIDAK ADA nama game yang cocok -> Jawab sebagai Chat Biasa (Jangan kasih script!)
+    if (!matchedGameKey) {
+        // Balasan santai ala ngobrol biasa
+        const responses = [
+            `Wkwk santai bro, ${rawText}? Coba sebutin nama game Roblox yang bener kalau mau cari skrip ya! 😎`,
+            `Haha iya santai. Mau ngobrol atau lagi nyari skrip game apa nih hari ini? Ketik nama map-nya aja ya!`,
+            `Duh, kalau cuma ngomong "${rawText}" saya gak ngasih skrip lah wkwk. Sebutin nama gamenya dong!`
+        ];
+        
+        // Ambil balasan secara acak biar natural
+        let randomReply = responses[Math.floor(Math.random() * responses.length)];
+        
         return {
             type: "chat",
-            text: `Hmm, maksudnya mau cari skrip untuk game apa nih bro? Coba sebutkan nama map atau gamenya yang jelas ya! 😉`
+            text: randomReply
         };
     }
 
-    // 4. Default jika tidak dikenali sebagai game
+    // 4. JIKA KETEMU nama gamenya -> Baru keluarkan kotak script
+    let data = validGames[matchedGameKey];
     return {
-        type: "chat",
-        text: `Duh, kayaknya skrip buat "${rawText}" belum ada di database KAKEK_VIPP deh. Coba ketik nama game lain yang bener wkwk!`
+        type: "script",
+        gameName: data.name,
+        tags: data.tags,
+        loadstring: data.url
     };
 }
