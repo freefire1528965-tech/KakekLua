@@ -39,22 +39,21 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Database script spesifik berdasarkan nama map
-        function getScriptForMap(mapName) {
+        // Database pencarian script otomatis berdasarkan nama map
+        function searchScriptDatabase(mapName) {
             const cleanKey = mapName.toLowerCase().trim();
             
-            // Database penyimpanan link loadstring per map
-            const scriptDatabase = {
+            const database = {
                 "+1 kekuatan untuk menumbuhkan lengan anda": 'loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()',
-                "race for egg": 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ contoh-link-lain.lua"))()'
+                "race for egg": 'loadstring(game:HttpGet("https://raw.githubusercontent.com/fjr-code/race-for-egg.lua"))()'
             };
 
-            if (scriptDatabase[cleanKey]) {
-                return scriptDatabase[cleanKey];
+            if (database[cleanKey]) {
+                return database[cleanKey];
             }
             
-            // Fallback default jika map belum terdaftar di database
-            return `loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()`;
+            // Fallback default jika nama map belum terdaftar di database lokal
+            return 'loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()';
         }
 
         async function processAIResponse(rawUserMessage) {
@@ -65,7 +64,9 @@
 
             await new Promise(resolve => setTimeout(resolve, 700));
 
-            // MODE SCRIPT: Parsing cerdas setelah "map:"
+            // ==========================================
+            // MODE SCRIPT (Hanya aktif jika diawali "map:")
+            // ==========================================
             const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
             if (mapTriggerMatch) {
                 let rawQuery = mapTriggerMatch[1].trim();
@@ -82,47 +83,43 @@
                     cleanMapName = rawQuery;
                 }
 
-                const matchedScript = getScriptForMap(cleanMapName);
-
-                return `${matchedScript}\n\n-- Target Map: ${cleanMapName}`;
+                const scriptResult = searchScriptDatabase(cleanMapName);
+                return `${scriptResult}\n\n-- Target Map: ${cleanMapName}`;
             }
 
-            // MODE CHAT NORMAL
+            // ==========================================
+            // MODE CHAT NORMAL (Presisi & Luwes)
+            // ==========================================
             if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
-                return "Halo bro ada yg bisa kakek bantu 🤘";
+                return "Halo juga bro! Ada script map apa nih yang mau kakek carikan 🤘";
+            }
+
+            if (lowerText.includes("ngobrol") || lowerText.includes("santai") || lowerText.includes("temenin")) {
+                return "Boleh banget bro, santai aja. Lagi ngerjain project apa nih sekarang?";
             }
 
             if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
-                return "Baik bro 😎 lu sendiri gimana?";
+                return "Baik banget bro 😎 lu sendiri gimana, aman?";
             }
 
-            if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
-                return "Siap bro, bantuan soal apa?";
+            if (lowerText.includes("bantuan") || lowerText.includes("tolong") || lowerText.includes("bisa bantu")) {
+                return "Siap bro, tinggal bilang aja mau cari script map apa, nanti kakek cariin.";
             }
 
             if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
-                return "Siap bro 😎 script apa yang lu cari?";
+                return "Gampang bro! Langsung ketik aja formatnya: map: [NamaMap] biar langsung dikasih kodenya 🤘";
             }
 
-            if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
-                return "Errornya di bagian mana bro?";
+            if (lowerText.includes("error") || lowerText.includes("bug")) {
+                return "Wah, error di bagian mana bro? Coba ceritain biar kakek bantu analisa.";
             }
 
-            if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
-                return "Wkwk kenapa bro? Cerita aja.";
+            if (lowerText.includes("makasih") || lowerText.includes("terima kasih")) {
+                return "Sama-sama bro! Kalau butuh script map lain tinggal ketik aja ya 😎";
             }
 
-            if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
-                return "Lagi standby nih wkwk 😎";
-            }
-
-            const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
-            
-            if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
-                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung dicariin loadstring-nya ya!`;
-            }
-
-            return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
+            // Respons natural jika tidak masuk kategori khusus (tanpa mengulang kalimat user)
+            return "Mantap bro. Kalau mau nyari script game-nya, langsung pakai format 'map: [nama map]' ya biar langsung dapet kodenya 🤘";
         }
 
         async function handleSend() {
