@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KakekLua AI Hub</title>
     <style>
+        * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
         .user-message { background: #007bff; color: #fff; align-self: flex-end; }
         .bot-message { background: #2a2a2a; color: #fff; align-self: flex-start; }
-        .input-area { display: flex; padding: 10px; background: #1e1e1e; border-top: 1px solid #333; }
-        .input-area input { flex: 1; padding: 10px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 4px; outline: none; }
-        .input-area button { padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; margin-left: 8px; cursor: pointer; }
+        .input-area { display: flex; padding: 12px; background: #1e1e1e; border-top: 1px solid #333; position: sticky; bottom: 0; width: 100%; }
+        .input-area input { flex: 1; padding: 12px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 6px; outline: none; font-size: 14px; }
+        .input-area button { padding: 12px 20px; background: #007bff; color: #fff; border: none; border-radius: 6px; margin-left: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -21,13 +22,13 @@
         <div class="message bot-message">Halo bro! KakekLua siap nemenin kamu ngobrol atau bikinin script Roblox. Ketik santai buat ngobrol, atau gunakan format <b>map: NamaMap</b> kalau mau dibuatkan skripnya!</div>
     </div>
 
+    <!-- AREA INPUT DAN TOMBOL KIRIM YANG TADI KETINGGALAN -->
     <div class="input-area">
         <input type="text" id="chatInput" placeholder="Ketik pesan atau 'map: NamaMap'...">
         <button id="sendButton">Kirim</button>
     </div>
 
     <script>
-        // 1. Fungsi Logika Pemilah Pesan (Sesuai Aturan Kamu)
         function getMessageMode(message) {
             const text = String(message || "").trim();
             const match = text.match(/^map\s*:\s*(.*)$/i);
@@ -40,11 +41,9 @@
                 return { mode: "MAP_SCRIPT", mapName };
             }
 
-            // Pesan biasa akan masuk ke mode chat normal
             return { mode: "CHAT", message: text };
         }
 
-        // 2. Fungsi Menampilkan Pesan ke Layar
         function appendMessage(sender, text) {
             const chatContainer = document.getElementById("chat-container");
             const messageDiv = document.createElement("div");
@@ -54,35 +53,29 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // 3. Fungsi Komunikasi ke AI / API
         async function callAI(promptText, isScriptMode) {
             try {
-                // Simulasi respons AI chat normal / script generator
-                // (Kamu bisa mengganti bagian fetch ini dengan endpoint API AI asli yang kamu pakai di project sebelumnya)
                 setTimeout(() => {
                     if (isScriptMode) {
-                        appendMessage("bot", `// Script Lua Roblox berhasil dibuat!\n-- Untuk map: ${promptText}\n\nprint("KakekLua Auto Farm Active!");\n-- Masukkan kode otomatisasi di sini.`);
+                        appendMessage("bot", `// Script Lua Roblox berhasil dibuat!\n-- Untuk map: ${promptText}\n\nprint("KakekLua Auto Farm Active!");`);
                     } else {
-                        appendMessage("bot", `Halo bro! Menanggapi: "${promptText}", santai aja, KakekLua siap bantu apa kata lu!`);
+                        appendMessage("bot", `Halo bro! Menanggapi: "${promptText}", santai aja, KakekLua siap bantu!`);
                     }
                 }, 600);
             } catch (error) {
                 console.error(error);
-                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba kirim ulang pesannya ya, bro!");
+                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba kirim ulang ya, bro!");
             }
         }
 
-        // 4. Logika Tombol Kirim Pesan
         async function handleSend() {
             const inputElement = document.getElementById("chatInput");
             const rawText = inputElement.value;
             if (!rawText.trim()) return;
 
-            // Tampilkan pesan user ke UI
             appendMessage("user", rawText);
             inputElement.value = "";
 
-            // Evaluasi pesan menggunakan fungsi pembatas trigger
             const evaluated = getMessageMode(rawText);
 
             if (evaluated.mode === "MAP_EMPTY") {
@@ -91,15 +84,12 @@
             }
 
             if (evaluated.mode === "MAP_SCRIPT") {
-                // Masuk mode script khusus map
                 await callAI(evaluated.mapName, true);
             } else {
-                // Mode chat normal (bisa ngobrol biasa tanpa bikin script otomatis)
                 await callAI(evaluated.message, false);
             }
         }
 
-        // Event Listener untuk Tombol Kirim dan Tombol Enter di Keyboard HP/PC
         document.getElementById("sendButton").addEventListener("click", handleSend);
         document.getElementById("chatInput").addEventListener("keypress", (e) => {
             if (e.key === "Enter") handleSend();
