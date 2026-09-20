@@ -1,31 +1,72 @@
-function handleAIResponse(userText) {
-    const text = userText.toLowerCase().trim();
+// Database script game kamu (bisa ditambah sesuai kebutuhan)
+const scriptDatabase = {
+    "blox fruits": {
+        name: "Blox Fruits",
+        tags: ["KEYLESS", "AUTO FARM"],
+        url: 'game:HttpGet("https://raw.githubusercontent.com/.../blox_fruits.lua")'
+    },
+    "pet simulator": {
+        name: "Pet Simulator 99",
+        tags: ["KEYLESS", "AUTO COIN"],
+        url: 'game:HttpGet("https://raw.githubusercontent.com/.../petsim99.lua")'
+    },
+    "strength simulator": {
+        name: "+1 Strength Grow Arms",
+        tags: ["KEYLESS", "AUTO FARM"],
+        url: 'game:HttpGet("https://raw.githubusercontent.com/.../strength.lua")'
+    }
+};
 
-    // 1. Deteksi kalau cuma ngobrol / basa-basi / sapaan
-    const chatKeywords = ["halo", "hai", "p", "wkwk", "woy", "assalamualaikum", "test", "pagi", "malam", "min", "bang", "bos"];
-    const isOnlyChat = chatKeywords.some(word => text === word || text.startsWith(word + " "));
+function processUserMessage(inputText) {
+    const rawText = inputText.trim();
+    const lowerText = rawText.toLowerCase();
 
-    // Kalau teksnya mengandung unsur ngobrol santai / curhat singkat
-    if (isOnlyChat || text.length < 5 && !isGameName(text)) {
+    // 1. Deteksi apakah kalimat tersebut adalah sapaan atau obrolan santai
+    const casualWords = ["halo", "hai", "p", "woy", "assalamualaikum", "wkwk", "test", "pagi", "malam", "min", "bang", "bos", "terima kasih", "makasih", "buat", "kamu", "siapa"];
+    
+    // Cek apakah kalimat diawali atau hanya berisi kata santai / curhat
+    let isCasualChat = casualWords.some(word => lowerText === word || lowerText.startsWith(word + " "));
+    
+    // Kalau ada kata yang menunjukkan orang ini lagi curhat/ngobrol (bukan nyebut game)
+    if (isCasualChat && !lowerText.includes("script") && !lowerText.includes("game") && !lowerText.includes("map")) {
         return {
             type: "chat",
-            text: "Wkwk santai bro! Mau ngobrol dulu apa mau cari script game apa nih hari ini? Ketik aja nama gamenya kalau udah siap ya!"
+            text: "Wkwk santai bro! Kalau mau ngobrol silakan, tapi kalau lagi cari skrip game Roblox tertentu, tinggal sebutin aja nama gamenya ya! 😎"
         };
     }
 
-    // 2. Kalau beneran mau cari script game
-    let scriptResult = searchInDatabase(text);
-    if (scriptResult) {
+    // 2. Deteksi apakah user secara spesifik nanyain script
+    // Kita cari apakah ada nama game di database yang cocok dengan teks user
+    let foundGameKey = null;
+    for (let key in scriptDatabase) {
+        if (lowerText.includes(key)) {
+            foundGameKey = key;
+            break;
+        }
+    }
+
+    // Kalau ketemu nama gamenya di database
+    if (foundGameKey) {
+        let data = scriptDatabase[foundGameKey];
         return {
             type: "script",
-            gameName: userText,
-            loadstring: scriptResult.url
-        };
-    } else {
-        return {
-            type: "chat",
-            text: `Duh, kayaknya script buat "${userText}" belum ada deh. Coba ketik nama game lain yang bener wkwk!`
+            gameName: data.name,
+            tags: data.tags,
+            loadstring: `game:HttpGet("${data.url}")`
         };
     }
+
+    // 3. Kalau user ngetik panjang tapi gak jelas nama gamenya
+    if (lowerText.length > 10 && !lowerText.includes("cari") && !lowerText.includes("minta")) {
+        return {
+            type: "chat",
+            text: `Hmm, maksudnya mau cari skrip untuk game apa nih bro? Coba sebutkan nama map atau gamenya yang jelas ya! 😉`
+        };
+    }
+
+    // 4. Default jika tidak dikenali sebagai game
+    return {
+        type: "chat",
+        text: `Duh, kayaknya skrip buat "${rawText}" belum ada di database KAKEK_VIPP deh. Coba ketik nama game lain yang bener wkwk!`
+    };
 }
-        
