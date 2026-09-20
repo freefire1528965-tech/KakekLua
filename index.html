@@ -7,6 +7,27 @@
     <style>
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Header Logo Styling */
+        .app-header {
+            background: #181818;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-logo {
+            width: 100%;
+            max-width: 220px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            border: 1px solid #007bff;
+        }
+
         #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; line-height: 1.4; }
         .user-message { background: #007bff; color: #fff; align-self: flex-end; }
@@ -17,6 +38,11 @@
     </style>
 </head>
 <body>
+
+    <!-- Header Logo Kakek-Vipp -->
+    <div class="app-header">
+        <img src="391879.png" alt="Kakek-Vipp Logo" class="app-logo">
+    </div>
 
     <div id="chat-container">
         <div class="message bot-message">Halo bro ada yg bisa kakek bantu 🤘</div>
@@ -39,7 +65,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Database pencarian script otomatis berdasarkan nama map
         function searchScriptDatabase(mapName) {
             const cleanKey = mapName.toLowerCase().trim();
             
@@ -52,7 +77,6 @@
                 return database[cleanKey];
             }
             
-            // Fallback default jika nama map belum terdaftar di database lokal
             return 'loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()';
         }
 
@@ -64,9 +88,6 @@
 
             await new Promise(resolve => setTimeout(resolve, 700));
 
-            // ==========================================
-            // MODE SCRIPT (Hanya aktif jika diawali "map:")
-            // ==========================================
             const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
             if (mapTriggerMatch) {
                 let rawQuery = mapTriggerMatch[1].trim();
@@ -87,9 +108,6 @@
                 return `${scriptResult}\n\n-- Target Map: ${cleanMapName}`;
             }
 
-            // ==========================================
-            // MODE CHAT NORMAL (Presisi & Luwes)
-            // ==========================================
             if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
                 return "Halo juga bro! Ada script map apa nih yang mau kakek carikan 🤘";
             }
@@ -118,7 +136,6 @@
                 return "Sama-sama bro! Kalau butuh script map lain tinggal ketik aja ya 😎";
             }
 
-            // Respons natural jika tidak masuk kategori khusus (tanpa mengulang kalimat user)
             return "Mantap bro. Kalau mau nyari script game-nya, langsung pakai format 'map: [nama map]' ya biar langsung dapet kodenya 🤘";
         }
 
