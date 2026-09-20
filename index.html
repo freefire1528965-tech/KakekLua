@@ -19,29 +19,17 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo bro! KakekLua siap nemenin lu ngobrol. Ketik santai buat ngobrol biasa, atau pakai format <b>map: NamaMap</b> kalau mau langsung digasihi skrip Roblox-nya!</div>
+        <div class="message bot-message">halo bro 😎 ada yang bisa saya bantu?</div>
     </div>
 
     <div class="input-area">
-        <input type="text" id="chatInput" placeholder="Ketik pesan atau 'map: NamaMap'...">
+        <input type="text" id="chatInput" placeholder="Ketik pesan di sini...">
         <button id="sendButton">Kirim</button>
     </div>
 
     <script>
-        function getMessageMode(message) {
-            const text = String(message || "").trim();
-            const match = text.match(/^map\s*:\s*(.*)$/i);
-
-            if (match) {
-                const mapName = match[1].trim();
-                if (!mapName) {
-                    return { mode: "MAP_EMPTY", mapName: "" };
-                }
-                return { mode: "MAP_SCRIPT", mapName };
-            }
-
-            return { mode: "CHAT", message: text };
-        }
+        // Menyimpan riwayat percakapan agar bot ingat konteks ngobrol sebelumnya
+        let chatHistory = [];
 
         function appendMessage(sender, text) {
             const chatContainer = document.getElementById("chat-container");
@@ -52,39 +40,43 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Logika Respon Natural Tanpa Mengulang Teks User
-        async function callAI(promptText, isScript) {
-            const loadingId = "loading_" + Date.now();
-            const chatContainer = document.getElementById("chat-container");
-            const loadingDiv = document.createElement("div");
-            loadingDiv.className = "message bot-message";
-            loadingDiv.id = loadingId;
-            loadingDiv.innerText = "KakekLua sedang ngetik...";
-            chatContainer.appendChild(loadingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        // Logika Kecerdasan Respon Alami Berdasarkan Konteks Chat
+        async function getSmartAIResponse(userMessage) {
+            const text = userMessage.toLowerCase().trim();
 
-            await new Promise(resolve => setTimeout(resolve, 800));
-            document.getElementById(loadingId).remove();
+            // Simpan ke riwayat memori percakapan
+            chatHistory.push(text);
 
-            const lowerText = promptText.toLowerCase();
-            let reply = "";
+            // Simulasi jeda pengetikan agar terasa natural
+            await new Promise(resolve => setTimeout(resolve, 700));
 
-            if (isScript) {
-                reply = `// KakekLua Script Hub\n-- Target Map: ${promptText}\n\nlocal vu = game:GetService("VirtualUser")\ngame:GetService("Players").LocalPlayer.Idled:Connect(function()\n    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\n    task.wait(1)\n    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\nend)\n\nprint("Auto farm & Anti-AFK aktif untuk ${promptText}!");`;
-            } else if (lowerText.includes("halo") || lowerText.includes("hai") || lowerText.includes("p")) {
-                reply = "Wih, halo juga bro! Ada yang bisa Kakek bantu hari ini? Mau cari skrip game apa nih?";
-            } else if (lowerText.includes("cerdas") || lowerText.includes("keren") || lowerText.includes("mantap")) {
-                reply = "Wkwk santai bro, sebagai asisten andalan lu, Kakek pasti kasih yang terbaik. Mau dibikinin skrip buat map apa nih sekarang?";
-            } else if (lowerText.includes("script") || lowerText.includes("skrip") || lowerText.includes("cari")) {
-                reply = "Siap bro! Kalau mau nyari skrip, tinggal ketik format **map: NamaMap** ya di sini, nanti langsung Kakek buatkan skripnya.";
-            } else if (lowerText.includes("terima kasih") || lowerText.includes("makasih")) {
-                reply = "Sama-sama bro! Kalau ada kendala atau mau nambah fitur skrip lain, kabarin Kakek aja ya.";
-            } else {
-                // Jawaban umum yang ngalir natural tanpa mengutip teks user mentah-mentah
-                reply = "Haha bener banget tuh, bro! Ada hal lain yang mau kita bahas atau mau dibikinin skrip otomatisasi buat game tertentu? Tinggal ketik map: [NamaMap]-nya ya!";
+            // 1. Percakapan Sapaan / Normal
+            if (text.includes("halo") || text.includes("hai") || text.includes("p ")) {
+                return "halo juga bro 😎 ada yang bisa saya bantu?";
+            }
+            if (text.includes("lagi ngapain") || text.includes("lagi sibuk")) {
+                return "lagi standby nih wkwk 😎 ada yang mau dibuat atau ditanyakan?";
             }
 
-            appendMessage("bot", reply);
+            // 2. Saat user bilang mau cari skrip (Bot JANGAN langsung kasih skrip, tapi tanya balik)
+            if (text.includes("cari script") || text.includes("butuh script") || text.includes("mau script") || text.includes("bikin script")) {
+                return "siap bro, script buat apa?";
+            }
+
+            // 3. Konteks lanjutan saat user menyebutkan game/kebutuhan
+            if (chatHistory.some(msg => msg.includes("cari script") || msg.includes("butuh script") || msg.includes("mau script") || msg.includes("bikin script"))) {
+                if (text.includes("game") || text.includes("simulator") || text.includes("map") || text.includes("buat game")) {
+                    return "oke bro, game apa?";
+                }
+            }
+
+            // 4. Jika user sudah menyebutkan nama game/map, baru berikan skripnya atau tanyakan detail fiturnya
+            if (text.includes("map:") || chatHistory.length > 4) {
+                return `// Skrip Roblox Lua Berhasil Dibuat!\n-- Disesuaikan dengan kebutuhanmu\n\nlocal player = game.Players.LocalPlayer\nprint("KakekLua Script Aktif!");\n\n-- Silakan sesuaikan koordinat atau fungsi auto-farm di sini`;
+            }
+
+            // 5. Default balasan ngobrol santai umum
+            return `oh begitu bro. ngomong-ngomong soal "${userMessage}", ada detail khusus atau fitur lain yang mau ditambahkan?`;
         }
 
         async function handleSend() {
@@ -92,21 +84,26 @@
             const rawText = inputElement.value;
             if (!rawText.trim()) return;
 
+            // Tampilkan pesan user
             appendMessage("user", rawText);
             inputElement.value = "";
 
-            const evaluated = getMessageMode(rawText);
+            // Tampilkan indikator loading bot
+            const loadingId = "loading_" + Date.now();
+            const chatContainer = document.getElementById("chat-container");
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "message bot-message";
+            loadingDiv.id = loadingId;
+            loadingDiv.innerText = "sedang mengetik...";
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            if (evaluated.mode === "MAP_EMPTY") {
-                appendMessage("bot", "Tolong sebutkan nama map-nya dong, bro! Contoh: map: +1 Strength Grow Arms");
-                return;
-            }
+            // Dapatkan respon cerdas
+            const botReply = await getSmartAIResponse(rawText);
 
-            if (evaluated.mode === "MAP_SCRIPT") {
-                await callAI(evaluated.mapName, true);
-            } else {
-                await callAI(evaluated.message, false);
-            }
+            // Hapus loading dan tampilkan balasan bot
+            document.getElementById(loadingId).remove();
+            appendMessage("bot", botReply);
         }
 
         document.getElementById("sendButton").addEventListener("click", handleSend);
