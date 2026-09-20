@@ -28,7 +28,6 @@
     </div>
 
     <script>
-        // 1. Filter Mode Sesuai Aturan
         function getMessageMode(message) {
             const text = String(message || "").trim();
             const match = text.match(/^map\s*:\s*(.*)$/i);
@@ -53,7 +52,7 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // 2. Logika Respon AI yang Variatif & Pintar
+        // Logika Respon Natural Tanpa Mengulang Teks User
         async function callAI(promptText, isScript) {
             const loadingId = "loading_" + Date.now();
             const chatContainer = document.getElementById("chat-container");
@@ -71,16 +70,18 @@
             let reply = "";
 
             if (isScript) {
-                // Jika pakai format map: NamaMap
                 reply = `// KakekLua Script Hub\n-- Target Map: ${promptText}\n\nlocal vu = game:GetService("VirtualUser")\ngame:GetService("Players").LocalPlayer.Idled:Connect(function()\n    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\n    task.wait(1)\n    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)\nend)\n\nprint("Auto farm & Anti-AFK aktif untuk ${promptText}!");`;
             } else if (lowerText.includes("halo") || lowerText.includes("hai") || lowerText.includes("p")) {
                 reply = "Wih, halo juga bro! Ada yang bisa Kakek bantu hari ini? Mau cari skrip game apa nih?";
+            } else if (lowerText.includes("cerdas") || lowerText.includes("keren") || lowerText.includes("mantap")) {
+                reply = "Wkwk santai bro, sebagai asisten andalan lu, Kakek pasti kasih yang terbaik. Mau dibikinin skrip buat map apa nih sekarang?";
             } else if (lowerText.includes("script") || lowerText.includes("skrip") || lowerText.includes("cari")) {
-                reply = "Oh lu lagi nyari skrip ya? Gampang! Ketik aja formatnya **map: NamaMap** di kolom chat, nanti langsung dibikinin skripnya sama Kakek.";
+                reply = "Siap bro! Kalau mau nyari skrip, tinggal ketik format **map: NamaMap** ya di sini, nanti langsung Kakek buatkan skripnya.";
             } else if (lowerText.includes("terima kasih") || lowerText.includes("makasih")) {
-                reply = "Sama-sama bro! Kalau ada kendala skrip atau mau nyari map lain, tinggal kabarin Kakek lagi ya.";
+                reply = "Sama-sama bro! Kalau ada kendala atau mau nambah fitur skrip lain, kabarin Kakek aja ya.";
             } else {
-                reply = `Oh gitu, ngomongin soal "${promptText}", itu mantap juga sih. Mau dibikinin skrip otomatisasi buat game itu? Tinggal ketik map: [NamaMap]-nya ya, bro!`;
+                // Jawaban umum yang ngalir natural tanpa mengutip teks user mentah-mentah
+                reply = "Haha bener banget tuh, bro! Ada hal lain yang mau kita bahas atau mau dibikinin skrip otomatisasi buat game tertentu? Tinggal ketik map: [NamaMap]-nya ya!";
             }
 
             appendMessage("bot", reply);
