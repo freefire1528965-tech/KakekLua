@@ -1,122 +1,105 @@
-// ==========================================
-// KAKEKLUAVIP - SCRIPT CHAT & AI LOGIC
-// ==========================================
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KakekLua AI Hub</title>
+    <style>
+        /* Desain standar agar UI tidak rusak */
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
+        .user-message { background: #007bff; color: #fff; align-self: flex-end; }
+        .bot-message { background: #2a2a2a; color: #fff; align-self: flex-start; }
+        .input-area { display: flex; padding: 10px; background: #1e1e1e; border-top: 1px solid #333; }
+        .input-area input { flex: 1; padding: 10px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 4px; outline: none; }
+        .input-area button { padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; margin-left: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-// 1. Fungsi Deteksi Mode Pesan (Filter Trigger)
-function getMessageMode(message) {
-    const text = String(message || "").trim();
-    const match = text.match(/^map\s*:\s*(.*)$/i);
+    <div id="chat-container">
+        <div class="message bot-message">Halo! KakekLua siap membantu kamu ngobrol atau mencari skrip Roblox. Ada yang bisa dibantu?</div>
+    </div>
 
-    if (match) {
-        const mapName = match[1].trim();
-        if (!mapName) {
-            return { mode: "MAP_EMPTY", mapName: "" };
-        }
-        return { mode: "MAP_SCRIPT", mapName };
-    }
+    <div class="input-area">
+        <input type="text" id="chatInput" placeholder="Ketik pesan atau 'map: NamaMap'...">
+        <button id="sendButton">Kirim</button>
+    </div>
 
-    return { mode: "CHAT", message: text };
-}
+    <script>
+        // 1. Fungsi Filter Mode Pesan
+        function getMessageMode(message) {
+            const text = String(message || "").trim();
+            const match = text.match(/^map\s*:\s*(.*)$/i);
 
-// 2. Fungsi untuk Menampilkan Pesan ke UI Chat (Bubble Chat)
-function appendMessage(sender, text) {
-    const chatContainer = document.getElementById("chat-container") || document.getElementById("chatBox") || document.body;
-    
-    const messageDiv = document.createElement("div");
-    messageDiv.className = `message ${sender}-message`;
-    messageDiv.style.margin = "8px 0";
-    messageDiv.style.padding = "10px 14px";
-    messageDiv.style.borderRadius = "8px";
-    messageDiv.style.maxWidth = "80%";
-    
-    if (sender === "user") {
-        messageDiv.style.background = "#007bff";
-        messageDiv.style.color = "#fff";
-        messageDiv.style.marginLeft = "auto";
-    } else {
-        messageDiv.style.background = "#e9ecef";
-        messageDiv.style.color = "#333";
-        messageDiv.style.marginRight = "auto";
-    }
-
-    messageDiv.innerText = text;
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-// 3. Fungsi Utama Menghubungkan ke API AI Anda
-async function callAIApi(promptText) {
-    try {
-        // Ganti URL atau Endpoint API AI Anda yang sudah ada di sini jika berbeda
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                // "Authorization": "Bearer API_KEY_ANDA" // Masukkan API key jika diperlukan
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: promptText }]
-            })
-        });
-
-        const data = await response.json();
-        
-        // Sesuaikan dengan struktur JSON balik dari API Anda
-        const reply = data.choices ? data.choices[0].message.content : (data.reply || "Halo! Ada yang bisa Kakek bantu?");
-        
-        appendMessage("bot", reply);
-    } catch (error) {
-        console.error("API Error:", error);
-        appendMessage("bot", "Waduh, koneksi AI lagi sedikit kendala nih bro. Coba lagi ya!");
-    }
-}
-
-// 4. Handler Tombol Kirim / Enter
-async function handleSendMessage() {
-    const inputElement = document.getElementById("user-input") || document.getElementById("chatInput");
-    if (!inputElement) return;
-
-    const rawText = inputElement.value;
-    if (!rawText.trim()) return;
-
-    // Tampilkan pesan user ke layar
-    appendMessage("user", rawText);
-    
-    // Kosongkan kolom input seketika
-    inputElement.value = "";
-
-    // Evaluasi menggunakan aturan getMessageMode
-    const evaluated = getMessageMode(rawText);
-
-    if (evaluated.mode === "MAP_EMPTY") {
-        appendMessage("bot", "Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
-        return;
-    }
-
-    let finalPrompt = "";
-    if (evaluated.mode === "MAP_SCRIPT") {
-        finalPrompt = `Buatkan skrip Roblox Lua khusus untuk map: ${evaluated.mapName}`;
-    } else {
-        // Chat normal (bebas ngobrol, tidak otomatis bikin script)
-        finalPrompt = evaluated.message;
-    }
-
-    // Kirim ke AI
-    await callAIApi(finalPrompt);
-}
-
-// 5. Otomatis pasang event listener saat halaman dimuat
-document.addEventListener("DOMContentLoaded", () => {
-    const sendButton = document.getElementById("send-btn") || document.getElementById("sendButton");
-    const inputElement = document.getElementById("user-input") || document.getElementById("chatInput");
-
-    if (sendButton && inputElement) {
-        sendButton.addEventListener("click", handleSendMessage);
-        inputElement.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                handleSendMessage();
+            if (match) {
+                const mapName = match[1].trim();
+                if (!mapName) {
+                    return { mode: "MAP_EMPTY", mapName: "" };
+                }
+                return { mode: "MAP_SCRIPT", mapName };
             }
+
+            return { mode: "CHAT", message: text };
+        }
+
+        // 2. Fungsi Menampilkan Pesan ke Layar
+        function appendMessage(sender, text) {
+            const chatContainer = document.getElementById("chat-container");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${sender === "user" ? "user-message" : "bot-message"}`;
+            messageDiv.innerText = text;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // 3. Fungsi Panggil AI API (Bisa disesuaikan dengan API lama kamu)
+        async function callAI(promptText) {
+            try {
+                // Simulasi respons normal atau ganti dengan fetch API aslimu
+                setTimeout(() => {
+                    appendMessage("bot", "Halo bro! Pesan kamu sudah diterima: \"" + promptText + "\". Ada hal lain yang mau dibahas?");
+                }, 500);
+            } catch (error) {
+                console.error(error);
+                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba lagi ya!");
+            }
+        }
+
+        // 4. Logika Tombol Kirim
+        async function handleSend() {
+            const inputElement = document.getElementById("chatInput");
+            const rawText = inputElement.value;
+            if (!rawText.trim()) return;
+
+            // Tampilkan pesan user
+            appendMessage("user", rawText);
+            inputElement.value = "";
+
+            // Evaluasi pesan menggunakan filter
+            const evaluated = getMessageMode(rawText);
+
+            if (evaluated.mode === "MAP_EMPTY") {
+                appendMessage("bot", "Tolong sebutkan nama map-nya ya, bro! Contoh: map: +1 Strength Grow Arms");
+                return;
+            }
+
+            let finalPayload = "";
+            if (evaluated.mode === "MAP_SCRIPT") {
+                finalPayload = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
+            } else {
+                finalPayload = evaluated.message;
+            }
+
+            await callAI(finalPayload);
+        }
+
+        // Event Listener Tombol & Enter
+        document.getElementById("sendButton").addEventListener("click", handleSend);
+        document.getElementById("chatInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") handleSend();
         });
-    }
-});
+    </script>
+</body>
+</html>
