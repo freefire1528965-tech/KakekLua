@@ -1,34 +1,89 @@
-function detectIntent(message) {
-    const text = message.trim();
+Perbaiki LOGIC CHAT KakekLua saya. JANGAN membuat ulang project dan JANGAN menghapus atau mengganti UI, CSS, HTML, desain, API, atau fitur yang sudah berjalan.
 
-    // Command khusus:
-    // "map:" di awal pesan = user meminta mode script map
-    if (/^map\s*:/i.test(text)) {
+Masalah:
+Bot sekarang terlalu cepat mengirim script. Saya ingin bot berperilaku seperti AI chat yang normal.
+
+ATURAN:
+
+1. Semua percakapan biasa harus dijawab secara natural oleh AI.
+2. Jangan membuat script hanya karena user mengatakan:
+
+   * "script"
+   * "kode"
+   * "map"
+   * nama game
+     Kata-kata tersebut sendiri bukan trigger.
+3. Hanya format `map:` yang menjadi trigger khusus.
+4. Contoh:
+   User: "halo bro"
+   Bot: jawab normal.
+
+   User: "aku lagi cari script"
+   Bot: jawab seperti AI biasa dan lanjut ngobrol.
+
+   User: "gimana cara bikin GUI?"
+   Bot: jawab pertanyaan tersebut.
+
+   User: "map: NamaMap"
+   Bot: masuk ke mode pembuatan script untuk map tersebut.
+5. `map:` harus berada di awal pesan, boleh ada spasi:
+   `map: NamaMap`
+   `map : NamaMap`
+6. Jika user hanya mengatakan `map`, jangan masuk mode script.
+7. Jika user menulis `map:` tetapi tidak memberikan nama map, tanyakan nama map.
+8. Jangan merusak chat history/context yang sudah ada.
+9. Jangan mengubah tampilan UI.
+10. Jangan menghapus fungsi AI/API yang sudah ada.
+11. Jangan mengganti nama variabel atau fungsi yang sudah dipakai kecuali benar-benar diperlukan.
+12. Jangan membuat file baru jika tidak diperlukan.
+13. Sebelum mengubah kode, baca kode project saya terlebih dahulu dan sesuaikan dengan struktur yang sudah ada.
+14. Jika sudah ada fungsi untuk mengirim pesan, gunakan fungsi tersebut. Jangan membuat sistem chat kedua.
+15. Jika ada error, pertahankan fallback agar pesan bot tetap bisa ditampilkan.
+
+Gunakan logika berikut sebagai REFERENSI, bukan untuk mengganti seluruh project:
+
+```js
+function getMessageMode(message) {
+    const text = String(message || "").trim();
+
+    // Hanya "map:" di awal pesan yang menjadi trigger
+    const match = text.match(/^map\s*:\s*(.*)$/i);
+
+    if (match) {
+        const mapName = match[1].trim();
+
+        if (!mapName) {
+            return {
+                mode: "MAP_EMPTY",
+                mapName: ""
+            };
+        }
+
         return {
-            type: "MAP_SCRIPT",
-            mapName: text.replace(/^map\s*:/i, "").trim()
+            mode: "MAP_SCRIPT",
+            mapName
         };
     }
 
-    // Selain command khusus, anggap sebagai percakapan biasa
+    // Semua pesan lainnya = percakapan normal
     return {
-        type: "CHAT",
+        mode: "CHAT",
         message: text
     };
 }
+```
 
-async function handleUserMessage(message) {
-    const intent = detectIntent(message);
+Kemudian integrasikan fungsi tersebut ke sistem chat KakekLua yang SUDAH ADA.
 
-    if (intent.type === "MAP_SCRIPT") {
-        if (!intent.mapName) {
-            return "Siap bro 😎 sebutin nama map-nya setelah `map:`.";
-        }
+PENTING:
 
-        return generateMapScript(intent.mapName);
-    }
-
-    // Jangan membuat script hanya karena user menyebut
-    // kata "script", "map", atau "kode".
-    return chatNormally(message);
-}
+* Jangan mengganti HTML/CSS.
+* Jangan menghapus elemen chat.
+* Jangan menghapus bubble pesan bot.
+* Jangan mengganti API AI.
+* Jangan membuat UI baru.
+* Jangan menulis ulang seluruh project.
+* Ubah hanya logic yang diperlukan.
+* Setelah selesai, berikan saya KODE FINAL LENGKAP yang sudah terintegrasi dengan project saya, bukan contoh kode terpisah.
+* Pastikan kode tidak menghasilkan layar putih atau JavaScript error.
+* Jika ada bagian project saya yang tidak boleh diubah, pertahankan persis seperti sebelumnya.
