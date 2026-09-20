@@ -1,61 +1,22 @@
-function handleAIResponse(userText) {
-    const rawText = userText.trim();
-    const lowerText = rawText.toLowerCase();
+function handleUserSubmit() {
+    let inputField = document.getElementById("userInput");
+    let userText = inputField.value;
+    if (!userText.trim()) return;
 
-    // 1. Daftar kata kunci game yang beneran ada di database kamu
-    // (Tambahkan nama-nama game Roblox di sini)
-    const validGames = {
-        "blox fruits": {
-            name: "Blox Fruits",
-            tags: ["KEYLESS", "AUTO FARM"],
-            url: 'game:HttpGet("https://raw.githubusercontent.com/.../bloxfruits.lua")'
-        },
-        "pet simulator": {
-            name: "Pet Simulator 99",
-            tags: ["KEYLESS", "AUTO COIN"],
-            url: 'game:HttpGet("https://raw.githubusercontent.com/.../petsim99.lua")'
-        },
-        "strength simulator": {
-            name: "+1 Strength Grow Arms",
-            tags: ["KEYLESS", "AUTO FARM"],
-            url: 'game:HttpGet("https://raw.githubusercontent.com/.../strength.lua")'
-        }
-        // Tambahkan game lain di sini...
-    };
+    // 1. Tampilkan pesan user dulu ke chat box
+    appendUserChat(userText);
+    inputField.value = "";
 
-    // 2. Cek apakah teks user mengandung salah satu nama game di atas
-    let matchedGameKey = null;
-    for (let gameKey in validGames) {
-        if (lowerText.includes(gameKey)) {
-            matchedGameKey = gameKey;
-            break;
-        }
+    // 2. Proses pakai fungsi AI kita yang baru
+    let aiResponse = processUserMessage(userText);
+
+    // 3. CEK TIPE BALASANNYA
+    if (aiResponse.type === "chat") {
+        // Kalau tipe chat, tampilkan sebagai gelembung teks biasa! Jangan bikin kotak script!
+        appendBotChat(aiResponse.text);
+    } 
+    else if (aiResponse.type === "script") {
+        // Kalau tipe script, baru tampilkan kotak loadstring-nya
+        appendBotScriptBox(aiResponse.gameName, aiResponse.tags, aiResponse.loadstring);
     }
-
-    // 3. JIKA TIDAK ADA nama game yang cocok -> Jawab sebagai Chat Biasa (Jangan kasih script!)
-    if (!matchedGameKey) {
-        // Balasan santai ala ngobrol biasa
-        const responses = [
-            `Wkwk santai bro, ${rawText}? Coba sebutin nama game Roblox yang bener kalau mau cari skrip ya! 😎`,
-            `Haha iya santai. Mau ngobrol atau lagi nyari skrip game apa nih hari ini? Ketik nama map-nya aja ya!`,
-            `Duh, kalau cuma ngomong "${rawText}" saya gak ngasih skrip lah wkwk. Sebutin nama gamenya dong!`
-        ];
-        
-        // Ambil balasan secara acak biar natural
-        let randomReply = responses[Math.floor(Math.random() * responses.length)];
-        
-        return {
-            type: "chat",
-            text: randomReply
-        };
-    }
-
-    // 4. JIKA KETEMU nama gamenya -> Baru keluarkan kotak script
-    let data = validGames[matchedGameKey];
-    return {
-        type: "script",
-        gameName: data.name,
-        tags: data.tags,
-        loadstring: data.url
-    };
 }
