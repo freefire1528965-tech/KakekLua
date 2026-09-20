@@ -1,22 +1,11 @@
-function handleUserSubmit() {
-    let inputField = document.getElementById("userInput");
-    let userText = inputField.value;
-    if (!userText.trim()) return;
-
-    // 1. Tampilkan pesan user dulu ke chat box
-    appendUserChat(userText);
-    inputField.value = "";
-
-    // 2. Proses pakai fungsi AI kita yang baru
-    let aiResponse = processUserMessage(userText);
-
-    // 3. CEK TIPE BALASANNYA
-    if (aiResponse.type === "chat") {
-        // Kalau tipe chat, tampilkan sebagai gelembung teks biasa! Jangan bikin kotak script!
-        appendBotChat(aiResponse.text);
-    } 
-    else if (aiResponse.type === "script") {
-        // Kalau tipe script, baru tampilkan kotak loadstring-nya
-        appendBotScriptBox(aiResponse.gameName, aiResponse.tags, aiResponse.loadstring);
-    }
-}
+// KODE YANG BIKIN "BANDEL" (Biasanya ada di bawah sendiri)
+document.getElementById("searchBtn").addEventListener("click", function() {
+    let userInput = document.getElementById("userInput").value;
+    
+    // NGE-TRIGGER INI LANGSUNG TANPA FILTER BALASAN CHAT!
+    let result = processUserMessage(userInput); 
+    
+    // Kalau fungsi lamamu langsung nampilin kotak script setiap kali ada input:
+    displayScriptBox(result); // <- INI MASALAHNYA!
+});
+        
