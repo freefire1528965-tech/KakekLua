@@ -19,7 +19,7 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo juga bro 😎 ada yang bisa saya bantu?</div>
+        <div class="message bot-message">Halo bro 😎 ada yang bisa dibantu?</div>
     </div>
 
     <div class="input-area">
@@ -28,27 +28,8 @@
     </div>
 
     <script>
-        // Riwayat memori percakapan untuk konteks multi-turn
+        // Menyimpan riwayat percakapan untuk konteks multi-turn
         let chatHistory = [];
-
-        // 1. EVALUASI TRIGGER MODE SCRIPT (Hanya jika diawali persis dengan "map:")
-        function evaluateInputMode(rawMessage) {
-            const text = String(rawMessage || "").trim();
-            const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
-
-            if (mapTriggerMatch) {
-                const mapInfo = mapTriggerMatch[1].trim();
-                return {
-                    mode: "SCRIPT_MODE",
-                    targetMap: mapInfo
-                };
-            }
-
-            return {
-                mode: "CHAT_MODE",
-                message: text
-            };
-        }
 
         function appendMessage(sender, text) {
             const chatContainer = document.getElementById("chat-container");
@@ -59,77 +40,102 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // 2. LOGIKA PEMAHAMAN KONTEKS & RESPON AI YANG DINAMIS
-        async function getKakekLuaAIResponse(evaluatedResult, originalUserText) {
-            chatHistory.push(originalUserText);
+        // ==========================================
+        // SISTEM 2 MODE UTAMA
+        // ==========================================
+        async function processAIResponse(rawUserMessage) {
+            const text = String(rawUserMessage || "").trim();
+            const lowerText = text.toLowerCase();
 
-            await new Promise(resolve => setTimeout(resolve, 700));
+            // Simpan ke riwayat memori percakapan
+            chatHistory.push(text);
 
-            // --- JIKA MASUK MODE SCRIPT (Hanya lewat trigger "map:") ---
-            if (evaluatedResult.mode === "SCRIPT_MODE") {
-                const mapName = evaluatedResult.targetMap;
-                
-                if (!mapName) {
-                    return "Mode Script aktif, bro! Tapi nama map-nya belum disebutin. Contoh: map: Race Egg";
-                }
+            await new Promise(resolve => setTimeout(resolve, 700)); // Simulasi jeda ngetik natural
 
-                return `// KakekLua Script Hub [MODE SCRIPT AKTIF]\n-- Target Map: ${mapName}\n\nlocal player = game.Players.LocalPlayer\nprint("Script otomatis aktif untuk map: ${mapName}!");\n\n-- Tambahkan fungsi script di sini`;
+            // ==========================================
+            // MODE 2: SCRIPT (Hanya jika diawali "map:")
+            // ==========================================
+            const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
+            if (mapTriggerMatch) {
+                const mapName = mapTriggerMatch[1].trim();
+                const targetDisplay = mapName ? mapName : "Default Map";
+
+                return `// KakekLua Script Generator [MODE SCRIPT AKTIF]\n-- Target Map: ${targetDisplay}\n\nlocal player = game.Players.LocalPlayer\nprint("Skrip berhasil digenerate untuk: ${targetDisplay}!");\n\nwhile task.wait(1) do\n    -- Logika utama script berjalan di sini\nend`;
             }
 
-            // --- JIKA PERCAKAPAN BIASA (Menganalisis pesan terbaru & konteks) ---
-            const lowerText = originalUserText.toLowerCase();
+            // ==========================================
+            // MODE 1: CHAT NORMAL (Paham Konteks & Dinamis)
+            // ==========================================
 
-            // A. Menanggapi Pencarian Script / Bantuan Script secara Natural
-            if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script") || lowerText.includes("bikin script")) {
-                return "Siap bro 😎 script apa yang lagi lu cari?";
+            // 1. Tanggapan Sapaan
+            if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
+                return "Halo bro 😎";
             }
 
-            // B. Menanggapi Sapaan
-            if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum)/)) {
-                return "Halo juga bro 😎 ada yang bisa saya bantu?";
+            // 2. Tanggapan Kabar
+            if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
+                return "Baik bro 😎 lu sendiri gimana?";
             }
 
-            // C. Menanggapi Pertanyaan "Lagi ngapain" / Kondisi Bot
-            if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk")) {
-                return "Lagi standby aja nih nungguin lu wkwk 😎 ada yang mau dibahas atau ditanyakan?";
+            // 3. Tanggapan Cari Bantuan
+            if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
+                return "Siap bro, bantuan soal apa?";
             }
 
-            // D. Menanggapi Kendala Map/Error (Tanpa Trigger SCRIPT_MODE)
-            if (lowerText.includes("error") || lowerText.includes("masalah") || lowerText.includes("bug")) {
-                return `Wah, kenapa tuh errornya? Coba ceritain detail kendalanya biar bisa dibantu cek, bro.`;
+            // 4. Tanggapan Cari Script
+            if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
+                return "Siap bro 😎 script apa yang lu cari?";
             }
 
-            // E. Konteks Lanjutan (Jika sebelumnya user bilang cari script, lalu merespons nama game/fitur)
+            // 5. Tanggapan Error / Masalah
+            if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
+                return "Errornya di bagian mana bro?";
+            }
+
+            // 6. Tanggapan Kebingungan / Curhat
+            if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
+                return "Wkwk kenapa bro? Cerita aja.";
+            }
+
+            // 7. Tanggapan Kondisi Bot / Lagi Ngapain
+            if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
+                return "Lagi standby nih wkwk 😎";
+            }
+
+            // 8. Tanggapan Konteks Lanjutan (Prioritas Pesan Terbaru & Riwayat)
             const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
-            if (previousMessage.includes("cari script") || previousMessage.includes("butuh script")) {
-                return `Oke bro, paham. Untuk ${originalUserText}, lu mau nambahin fitur spesifik kayak auto farm atau teleport?`;
+            
+            if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
+                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung digenerate kodenya ya!`;
             }
 
-            // F. Default Respons Relevan Berdasarkan Teks Terbaru
-            return `Oh begitu bro, ngomongin soal "${originalUserText}", ada hal khusus yang mau didiskusikan lagi?`;
+            // 9. Respon Default Dinamis (Menghindari template kaku yang berulang)
+            return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
         }
 
-        // 3. HANDLER PENGIRIMAN PESAN
         async function handleSend() {
             const inputElement = document.getElementById("chatInput");
             const rawText = inputElement.value;
             if (!rawText.trim()) return;
 
+            // Tampilkan pesan user
             appendMessage("user", rawText);
             inputElement.value = "";
 
+            // Indikator loading
             const loadingId = "loading_" + Date.now();
             const chatContainer = document.getElementById("chat-container");
             const loadingDiv = document.createElement("div");
             loadingDiv.className = "message bot-message";
             loadingDiv.id = loadingId;
-            loadingDiv.innerText = "KakekLua sedang mengetik...";
+            loadingDiv.innerText = "sedang mengetik...";
             chatContainer.appendChild(loadingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            const evaluated = evaluateInputMode(rawText);
-            const botReply = await getKakekLuaAIResponse(evaluated, rawText);
+            // Proses respons AI berdasarkan 2 Mode
+            const botReply = await processAIResponse(rawText);
 
+            // Hapus loading & tampilkan jawaban
             document.getElementById(loadingId).remove();
             appendMessage("bot", botReply);
         }
