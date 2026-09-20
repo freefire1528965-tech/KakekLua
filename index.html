@@ -1,108 +1,81 @@
-        // ==========================================
-        // SISTEM 2 MODE UTAMA (CHAT NORMAL & SCRIPT)
-        // ==========================================
-        async function processAIResponse(rawUserMessage) {
-            const text = String(rawUserMessage || "").trim();
-            const lowerText = text.toLowerCase();
+async function processAIResponse(rawUserMessage) {
+    const text = String(rawUserMessage || "").trim();
+    const lowerText = text.toLowerCase();
 
-            // Simpan ke riwayat memori percakapan
-            chatHistory.push(text);
+    chatHistory.push(text);
 
-            await new Promise(resolve => setTimeout(resolve, 700)); // Simulasi jeda ngetik natural
+    await new Promise(resolve => setTimeout(resolve, 700));
 
-            // ==========================================
-            // MODE 2: SCRIPT (Parsing cerdas setelah "map:")
-            // ==========================================
-            const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
-            if (mapTriggerMatch) {
-                let rawQuery = mapTriggerMatch[1].trim();
+    const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
+    if (mapTriggerMatch) {
+        let rawQuery = mapTriggerMatch[1].trim();
 
-                if (!rawQuery) {
-                    return "Formatnya kurang lengkap, bro. Contoh: map: race for egg";
-                }
-
-                // Membersihkan kalimat tanya di belakang nama map (seperti "ada gak", "saya butuh", dll)
-                let cleanMapName = rawQuery
-                    .replace(/(ada gak\?*|ada gak|tolong carikan|saya butuh.*|butuh script.*|cari script.*)/gi, "")
-                    .trim();
-
-                if (!cleanMapName) {
-                    cleanMapName = rawQuery; // Fallback jika pembersihan terlalu ketat
-                }
-
-                // Integrasi ke sistem database/pencarian script yang sudah ada di project kamu
-                // (Sesuaikan fungsi pencarian ini dengan database/API script yang sudah kamu miliki)
-                const foundScript = searchScriptFromDatabase(cleanMapName); 
-
-                if (foundScript) {
-                    return `// KakekLua Script Hub [DITEMUKAN]\n-- Target Map: ${cleanMapName}\n\n${foundScript}`;
-                } else {
-                    return `Waduh bro, untuk map "${cleanMapName}" script-nya belum ketemu nih di database kita. Coba cek kata kunci atau nama map-nya lagi ya!`;
-                }
-            }
-
-            // ==========================================
-            // MODE 1: CHAT NORMAL (Tetap dipertahankan 100%)
-            // ==========================================
-
-            // 1. Tanggapan Sapaan
-            if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
-                return "Halo bro 😎";
-            }
-
-            // 2. Tanggapan Kabar
-            if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
-                return "Baik bro 😎 lu sendiri gimana?";
-            }
-
-            // 3. Tanggapan Cari Bantuan
-            if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
-                return "Siap bro, bantuan soal apa?";
-            }
-
-            // 4. Tanggapan Cari Script
-            if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
-                return "Siap bro 😎 script apa yang lu cari?";
-            }
-
-            // 5. Tanggapan Error / Masalah
-            if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
-                return "Errornya di bagian mana bro?";
-            }
-
-            // 6. Tanggapan Kebingungan / Curhat
-            if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
-                return "Wkwk kenapa bro? Cerita aja.";
-            }
-
-            // 7. Tanggapan Kondisi Bot / Lagi Ngapain
-            if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
-                return "Lagi standby nih wkwk 😎";
-            }
-
-            // 8. Tanggapan Konteks Lanjutan
-            const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
-            
-            if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
-                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung dicariin datanya ya!`;
-            }
-
-            // 9. Respon Default Dinamis
-            return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
+        if (!rawQuery) {
+            return "Formatnya kurang lengkap, bro. Contoh: map: race for egg";
         }
 
-        // Contoh fungsi simulasi database/pencarian script yang sudah ada di project kamu
-        function searchScriptFromDatabase(mapName) {
-            // Tempatkan logika penghubung ke database/sumber skrip kamu di sini.
-            // Contoh jika data tersedia:
-            const databaseSimulasi = {
-                "race for egg": `local plrs = game.Players.LocalPlayer\nprint("Auto Farm Active for Race For Egg!")\n-- Sumber: Database KakekLua`,
-            };
+        let cleanMapName = rawQuery
+            .replace(/(ada gak\?*|ada gak|tolong carikan|saya butuh.*|butuh script.*|cari script.*)/gi, "")
+            .trim();
 
-            const key = mapName.toLowerCase();
-            if (databaseSimulasi[key]) {
-                return databaseSimulasi[key];
-            }
-            return null; // Mengembalikan null jika script tidak ditemukan
+        if (!cleanMapName) {
+            cleanMapName = rawQuery;
         }
-        
+
+        const foundScript = searchScriptFromDatabase(cleanMapName); 
+
+        if (foundScript) {
+            return `// KakekLua Script Hub [DITEMUKAN]\n-- Target Map: ${cleanMapName}\n\n${foundScript}`;
+        } else {
+            return `Waduh bro, untuk map "${cleanMapName}" script-nya belum ketemu nih di database kita. Coba cek kata kunci atau nama map-nya lagi ya!`;
+        }
+    }
+
+    if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
+        return "Halo bro 😎";
+    }
+
+    if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
+        return "Baik bro 😎 lu sendiri gimana?";
+    }
+
+    if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
+        return "Siap bro, bantuan soal apa?";
+    }
+
+    if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
+        return "Siap bro 😎 script apa yang lu cari?";
+    }
+
+    if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
+        return "Errornya di bagian mana bro?";
+    }
+
+    if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
+        return "Wkwk kenapa bro? Cerita aja.";
+    }
+
+    if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
+        return "Lagi standby nih wkwk 😎";
+    }
+
+    const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
+    
+    if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
+        return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung dicariin datanya ya!`;
+    }
+
+    return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
+}
+
+function searchScriptFromDatabase(mapName) {
+    const databaseSimulasi = {
+        "race for egg": `local plrs = game.Players.LocalPlayer\nprint("Auto Farm Active for Race For Egg!")\n-- Sumber: Database KakekLua`,
+    };
+
+    const key = mapName.toLowerCase();
+    if (databaseSimulasi[key]) {
+        return databaseSimulasi[key];
+    }
+    return null;
+}
