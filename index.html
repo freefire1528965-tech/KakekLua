@@ -1,189 +1,43 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KakekLua - AI Script Search Assistant</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+// Contoh fungsi penanganan pesan masuk pada AI Assistant
+function handleUserMessage(input) {
+    const cleanInput = input.trim().toLowerCase();
+    
+    // Daftar kata sapaan atau percakapan umum
+    const greetings = ["halo", "hai", "p", "assalamualaikum", "selamat pagi", "selamat malam", "hi"];
+    
+    // 1. Jika pengguna mengirim sapaan
+    if (greetings.includes(cleanInput)) {
+        return {
+            type: "chat",
+            message: "Halo! Selamat datang di Asisten KAKEK_VIPP ⚡. Silakan ketik nama game Roblox yang ingin Anda cari skripnya, dan saya akan dengan senang hati membantu menemukannya."
+        };
+    }
+    
+    // 2. Jika input menanyakan bantuan / fitur
+    else if (cleanInput.includes("tolong") || cleanInput.includes("cara") || cleanInput.includes("fitur")) {
+        return {
+            type: "chat",
+            message: "Tentu! Anda bisa memasukkan nama game simulator atau map Roblox tertentu untuk mendapatkan skrip otomatisasi seperti auto farm atau teleport."
+        };
+    }
+    
+    // 3. Jika input adalah nama game (Pencarian Skrip)
+    else {
+        // Cek apakah game tersedia di database Anda
+        let scriptData = searchScriptInDatabase(cleanInput);
         
-        /* Top Navigation Bar */
-        header { background-color: #161b22; padding: 12px 15px; border-bottom: 1px solid #30363d; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
-        .top-header { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 16px; font-weight: bold; color: #e3b341; display: flex; align-items: center; gap: 6px; }
-        
-        .header-right { display: flex; align-items: center; gap: 8px; }
-        .plan-badge { background: #21262d; border: 1px solid #30363d; color: #e3b341; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; }
-        .user-avatar { background: #1f6feb; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
-
-        /* Menu Tabs */
-        .nav-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-        .tab { background: #21262d; border: 1px solid #30363d; color: #8b949e; font-size: 11px; padding: 6px 12px; border-radius: 6px; white-space: nowrap; cursor: pointer; }
-        .tab.active { background: #1f6feb; color: white; border-color: #388bfd; font-weight: bold; }
-
-        /* Subheader */
-        .subheader { background: #11161d; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #21262d; font-size: 12px; flex-shrink: 0; }
-        .subheader span { color: #8b949e; }
-        .auto-copy-tag { background: #1f6feb22; color: #58a6ff; border: 1px solid #1f6feb55; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
-
-        /* Chat Container */
-        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; background: #0b0f15; }
-        
-        .message-row { display: flex; gap: 8px; max-width: 90%; }
-        .bot-row { align-self: flex-start; }
-        .user-row { align-self: flex-end; flex-direction: row-reverse; }
-
-        .avatar-bot { width: 28px; height: 28px; background: #1f6feb; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-        
-        .message-content { background: #161b22; border: 1px solid #30363d; padding: 10px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; color: #c9d1d9; }
-        .user-row .message-content { background: #1f6feb; color: white; border: none; border-radius: 10px 2px 10px 10px; }
-        .bot-row .message-content { border-radius: 2px 10px 10px 10px; }
-
-        /* Badges dalam Chat Bot */
-        .badge-container { display: flex; gap: 5px; margin: 8px 0; flex-wrap: wrap; }
-        .feature-badge { font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px; }
-        .badge-keyless { background: #23863633; color: #3fb950; border: 1px solid #238636; }
-        .badge-feature { background: #9e6a0333; color: #e3b341; border: 1px solid #9e6a03; }
-        .badge-yt { background: #da363333; color: #f85149; border: 1px solid #da3633; }
-
-        /* Code Box */
-        .code-box { background: #090d16; border: 1px solid #30363d; padding: 8px; border-radius: 6px; margin-top: 6px; overflow-x: auto; }
-        .code-box code { color: #7ee787; font-family: monospace; font-size: 11px; }
-
-        .copy-btn { background: #238636; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-top: 6px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; font-weight: bold; }
-        .copy-btn:hover { background: #2ea043; }
-
-        /* Input Footer */
-        .input-container { background-color: #161b22; padding: 10px 15px; display: flex; gap: 8px; border-top: 1px solid #30363d; flex-shrink: 0; }
-        input { flex: 1; background-color: #0d1117; border: 1px solid #30363d; padding: 10px 12px; border-radius: 8px; color: #c9d1d9; font-size: 12px; outline: none; }
-        input:focus { border-color: #58a6ff; }
-        button.cari-btn { background-color: #1f6feb; color: white; border: none; padding: 0 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        button.cari-btn:hover { background-color: #388bfd; }
-    </style>
-</head>
-<body>
-
-    <!-- Header & Menu Tabs -->
-    <header>
-        <div class="top-header">
-            <div class="logo">⚡ KakekLua</div>
-            <div class="header-right">
-                <div class="plan-badge">👑 VIP PLAN</div>
-                <div class="user-avatar">U</div>
-            </div>
-        </div>
-        <div class="nav-tabs">
-            <div class="tab">Overview</div>
-            <div class="tab active">🤖 AI Assistant</div>
-            <div class="tab">HWID Reset</div>
-            <div class="tab">Supported Maps</div>
-            <div class="tab">Script Loader</div>
-        </div>
-    </header>
-
-    <!-- Subheader Info -->
-    <div class="subheader">
-        <span>AI Script Search Assistant</span>
-        <div class="auto-copy-tag">Auto Copy System</div>
-    </div>
-
-    <!-- Chat Area -->
-    <div class="chat-container" id="chatContainer">
-        <!-- Pesan Sambutan Bot -->
-        <div class="message-row bot-row">
-            <div class="avatar-bot">🤖</div>
-            <div class="message-content">
-                HALO! SELAMAT DATANG DI ASISTEN SCRIPT KAKEK_VIPP ⚡<br><br>
-                SILAHKAN CARI SCRIPT YG KAMU MAU DI ASISTEN KAKEK_VIPP.<br>
-                TERIMAKASIH! 🫡
-            </div>
-        </div>
-    </div>
-
-    <!-- Input Footer -->
-    <div class="input-container">
-        <input type="text" id="userInput" placeholder="Minta script map apa saja..." onkeydown="if(event.key === 'Enter') handleSearch()">
-        <button class="cari-btn" onclick="handleSearch()">Cari</button>
-    </div>
-
-    <script>
-        function appendMessage(sender, text, scriptData = null, isGreeting = false) {
-            const chatContainer = document.getElementById('chatContainer');
-            const rowDiv = document.createElement('div');
-            rowDiv.className = `message-row ${sender === 'user' ? 'user-row' : 'bot-row'}`;
-            
-            if (sender === 'bot') {
-                let badgeHTML = '';
-                let codeHTML = '';
-                
-                if (!isGreeting && scriptData) {
-                    badgeHTML = `
-                        <div class="badge-container">
-                            <span class="feature-badge badge-yt">📺 YT UPDATE</span>
-                            <span class="feature-badge badge-keyless">🔓 KEYLESS</span>
-                            <span class="feature-badge badge-feature">⚡ AUTO FARM</span>
-                        </div>
-                    `;
-                    codeHTML = `
-                        <div class="code-box"><code>${scriptData}</code></div>
-                        <button class="copy-btn" onclick="copyCode(this, \`${scriptData}\`)">📋 Copy</button>
-                    `;
-                }
-
-                rowDiv.innerHTML = `
-                    <div class="avatar-bot">🤖</div>
-                    <div class="message-content">
-                        ${text}
-                        ${badgeHTML}
-                        ${codeHTML}
-                    </div>
-                `;
-            } else {
-                rowDiv.innerHTML = `
-                    <div class="message-content">${text}</div>
-                `;
-            }
-            
-            chatContainer.appendChild(rowDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        if (scriptData) {
+            return {
+                type: "script",
+                gameName: input,
+                tags: scriptData.tags, // contoh: ["KEYLESS", "AUTO FARM"]
+                loadstring: scriptData.url
+            };
+        } else {
+            return {
+                type: "chat",
+                message: `Mohon maaf, skrip untuk game "${input}" saat ini belum tersedia di database KAKEK_VIPP. Silakan coba cari nama game lain.`
+            };
         }
-
-        function copyCode(button, codeText) {
-            navigator.clipboard.writeText(codeText).then(() => {
-                button.innerText = "✅ Copied!";
-                setTimeout(() => { button.innerText = "📋 Copy"; }, 2000);
-            });
-        }
-
-        function handleSearch() {
-            const inputField = document.getElementById('userInput');
-            const query = inputField.value.trim();
-            if (!query) return;
-
-            // Tampilkan pesan user
-            appendMessage('user', query);
-            inputField.value = "";
-
-            const lowerQuery = query.toLowerCase();
-
-            // Cek apakah user cuma menyapa (Halo, P, Hi, Assalamualaikum, dll)
-            const greetings = ["halo", "hi", "p", "hai", "assalamualaikum", "test", "tes", "pagi", "siang", "malam"];
-            const isGreeting = greetings.some(word => lowerQuery === word || lowerQuery.startsWith(word + " "));
-
-            setTimeout(() => {
-                if (isGreeting) {
-                    // Kalau nyapa, dibales sapaan ramah tanpa script ngawur!
-                    appendMessage('bot', `Halo juga bro! Ada script map Roblox apa yang lagi kamu cari hari ini? Ketik aja nama gamenya ya! 🫡`, null, true);
-                } else {
-                    // Kalau ngetik nama game/script, baru bot nyariin script aslinya
-                    const formattedName = query.replace(/\s+/g, '').toLowerCase();
-                    const sampleScript = `loadstring(game:HttpGet("https://raw.githubusercontent.com/ToraIsMe/ToraIsMe/main/${formattedName}"))()`;
-                    
-                    appendMessage('bot', `Script terbaru ditemukan untuk: <b>${query}</b> (Dipindai dari update YouTube & Web)`, sampleScript, false);
-                }
-            }, 600);
-        }
-    </script>
-</body>
-</html>
+    }
+}
