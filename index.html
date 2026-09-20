@@ -28,7 +28,6 @@
     </div>
 
     <script>
-        // Menyimpan riwayat percakapan untuk konteks multi-turn
         let chatHistory = [];
 
         function appendMessage(sender, text) {
@@ -40,76 +39,71 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // ==========================================
-        // SISTEM 2 MODE UTAMA
-        // ==========================================
         async function processAIResponse(rawUserMessage) {
             const text = String(rawUserMessage || "").trim();
             const lowerText = text.toLowerCase();
 
-            // Simpan ke riwayat memori percakapan
             chatHistory.push(text);
 
-            await new Promise(resolve => setTimeout(resolve, 700)); // Simulasi jeda ngetik natural
+            await new Promise(resolve => setTimeout(resolve, 700));
 
-            // ==========================================
-            // MODE 2: SCRIPT (Hanya jika diawali "map:")
-            // ==========================================
+            // MODE SCRIPT: Parsing cerdas setelah "map:"
             const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
             if (mapTriggerMatch) {
-                const mapName = mapTriggerMatch[1].trim();
-                const targetDisplay = mapName ? mapName : "Default Map";
+                let rawQuery = mapTriggerMatch[1].trim();
 
-                return `// KakekLua Script Generator [MODE SCRIPT AKTIF]\n-- Target Map: ${targetDisplay}\n\nlocal player = game.Players.LocalPlayer\nprint("Skrip berhasil digenerate untuk: ${targetDisplay}!");\n\nwhile task.wait(1) do\n    -- Logika utama script berjalan di sini\nend`;
+                if (!rawQuery) {
+                    return "Formatnya kurang lengkap, bro. Contoh: map: race for egg";
+                }
+
+                // Bersihkan kalimat tanya di belakang nama map
+                let cleanMapName = rawQuery
+                    .replace(/(ada gak\?*|ada gak|tolong carikan|saya butuh.*|butuh script.*|cari script.*)/gi, "")
+                    .trim();
+
+                if (!cleanMapName) {
+                    cleanMapName = rawQuery;
+                }
+
+                // Langsung berikan output loadstring script sesuai permintaan
+                return `loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()\n\n-- Target Map: ${cleanMapName}`;
             }
 
-            // ==========================================
-            // MODE 1: CHAT NORMAL (Paham Konteks & Dinamis)
-            // ==========================================
-
-            // 1. Tanggapan Sapaan
+            // MODE CHAT NORMAL
             if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
                 return "Halo bro 😎";
             }
 
-            // 2. Tanggapan Kabar
             if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
                 return "Baik bro 😎 lu sendiri gimana?";
             }
 
-            // 3. Tanggapan Cari Bantuan
             if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
                 return "Siap bro, bantuan soal apa?";
             }
 
-            // 4. Tanggapan Cari Script
             if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
                 return "Siap bro 😎 script apa yang lu cari?";
             }
 
-            // 5. Tanggapan Error / Masalah
             if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
                 return "Errornya di bagian mana bro?";
             }
 
-            // 6. Tanggapan Kebingungan / Curhat
             if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
                 return "Wkwk kenapa bro? Cerita aja.";
             }
 
-            // 7. Tanggapan Kondisi Bot / Lagi Ngapain
             if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
                 return "Lagi standby nih wkwk 😎";
             }
 
-            // 8. Tanggapan Konteks Lanjutan (Prioritas Pesan Terbaru & Riwayat)
             const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
             
             if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
-                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung digenerate kodenya ya!`;
+                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung dicariin loadstring-nya ya!`;
             }
 
-            // 9. Respon Default Dinamis (Menghindari template kaku yang berulang)
             return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
         }
 
@@ -118,11 +112,9 @@
             const rawText = inputElement.value;
             if (!rawText.trim()) return;
 
-            // Tampilkan pesan user
             appendMessage("user", rawText);
             inputElement.value = "";
 
-            // Indikator loading
             const loadingId = "loading_" + Date.now();
             const chatContainer = document.getElementById("chat-container");
             const loadingDiv = document.createElement("div");
@@ -132,10 +124,8 @@
             chatContainer.appendChild(loadingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Proses respons AI berdasarkan 2 Mode
             const botReply = await processAIResponse(rawText);
 
-            // Hapus loading & tampilkan jawaban
             document.getElementById(loadingId).remove();
             appendMessage("bot", botReply);
         }
