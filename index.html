@@ -38,12 +38,12 @@
 
     <div class="chat-container" id="chatContainer">
         <div class="message bot-message">
-            Halo! Saya asisten pribadi kamu. Ketik game atau jenis script yang ingin kamu cari atau buat, nanti saya carikan dan berikan kodenya di sini!
+            Halo! Saya asisten pribadi kamu. Ketik game atau jenis script yang ingin kamu cari, nanti saya berikan kodenya di sini!
         </div>
     </div>
 
     <div class="input-container">
-        <input type="text" id="userInput" placeholder="Ketik permintaan script di sini (Contoh: Script Auto Farm)..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <input type="text" id="userInput" placeholder="Ketik permintaan script di sini..." onkeydown="if(event.key === 'Enter') sendMessage()">
         <button class="send-btn" onclick="sendMessage()">Kirim</button>
     </div>
 
@@ -78,13 +78,9 @@
             appendMessage('user', text);
             inputField.value = "";
 
-            // Simulasi respon bot AI cerdas
             setTimeout(() => {
-                const lowerText = text.toLowerCase();
-                let replyText = `Nih, script untuk permintaan: "${text}" berhasil dibuatkan/ditemukan!`;
                 let sampleCode = `loadstring(game:HttpGet("https://raw.githubusercontent.com/KakekLua/main/scripts/${encodeURIComponent(text.replace(/\s+/g, ''))}.lua"))()`;
-                
-                appendMessage('bot', replyText, true, sampleCode);
+                appendMessage('bot', `Nih, script untuk "${text}" berhasil ditemukan:`, true, sampleCode);
             }, 1000);
         }
     </script>
