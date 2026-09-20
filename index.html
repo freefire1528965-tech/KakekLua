@@ -8,7 +8,7 @@
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
+        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; }
         .user-message { background: #007bff; color: #fff; align-self: flex-end; }
         .bot-message { background: #2a2a2a; color: #fff; align-self: flex-start; }
         .input-area { display: flex; padding: 12px; background: #1e1e1e; border-top: 1px solid #333; position: sticky; bottom: 0; width: 100%; }
@@ -19,10 +19,9 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo bro! KakekLua siap nemenin kamu ngobrol atau bikinin script Roblox. Ketik santai buat ngobrol, atau gunakan format <b>map: NamaMap</b> kalau mau dibuatkan skripnya!</div>
+        <div class="message bot-message">Halo bro! KakekLua siap ngobrol. Ketik santai buat ngobrol biasa, atau pakai format <b>map: NamaMap</b> kalau mau dibuatkan skrip Roblox!</div>
     </div>
 
-    <!-- AREA INPUT DAN TOMBOL KIRIM YANG TADI KETINGGALAN -->
     <div class="input-area">
         <input type="text" id="chatInput" placeholder="Ketik pesan atau 'map: NamaMap'...">
         <button id="sendButton">Kirim</button>
@@ -53,18 +52,48 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        async function callAI(promptText, isScriptMode) {
+        // FUNGSI UTAMA AI: Hubungkan ke endpoint API asli kamu di sini
+        async function callAI(promptText) {
             try {
-                setTimeout(() => {
-                    if (isScriptMode) {
-                        appendMessage("bot", `// Script Lua Roblox berhasil dibuat!\n-- Untuk map: ${promptText}\n\nprint("KakekLua Auto Farm Active!");`);
-                    } else {
-                        appendMessage("bot", `Halo bro! Menanggapi: "${promptText}", santai aja, KakekLua siap bantu!`);
-                    }
-                }, 600);
+                // Tampilkan indikator loading sebentar
+                const loadingId = "loading_" + Date.now();
+                const chatContainer = document.getElementById("chat-container");
+                const loadingDiv = document.createElement("div");
+                loadingDiv.className = "message bot-message";
+                loadingDiv.id = loadingId;
+                loadingDiv.innerText = "KakekLua sedang mengetik...";
+                chatContainer.appendChild(loadingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // CONTOH: Jika kamu punya endpoint API sendiri, ganti URL fetch di bawah ini.
+                // Jika sebelumnya project kamu pakai fungsi API tertentu, masukkan kembali di sini.
+                /*
+                const response = await fetch("URL_API_KAMU_DISINI", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: promptText })
+                });
+                const data = await response.json();
+                const replyText = data.reply || data.choices[0].message.content;
+                */
+
+                // SEMENTARA: Simulasi balasan cerdas sebelum kamu pasang API aslimu kembali
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Hapus tulisan loading
+                document.getElementById(loadingId).remove();
+
+                if (promptText.startsWith("Buatkan script Roblox Lua")) {
+                    appendMessage("bot", `// Skrip Lua untuk Roblox\n-- Dibuat otomatis oleh KakekLua\n\nlocal player = game.Players.LocalPlayer\nprint("Script aktif untuk: ${promptText}")\n\n-- Tambahkan fungsi auto farm / teleport di sini`);
+                } else {
+                    appendMessage("bot", `Wah benar juga ya, bro! Ngomong-ngomong soal "${promptText}", gimana kalau kita bahas lebih lanjut atau mau cari skrip map game apa nih?`);
+                }
+
             } catch (error) {
                 console.error(error);
-                appendMessage("bot", "Waduh, sistem lagi ada kendala nih. Coba kirim ulang ya, bro!");
+                const loader = document.querySelector(".bot-message:last-child");
+                if (loader && loader.innerText === "KakekLua sedang mengetik...") loader.remove();
+                appendMessage("bot", "Waduh, koneksi ke sistem AI lagi kendala nih bro. Coba ulangi ya!");
             }
         }
 
@@ -83,11 +112,14 @@
                 return;
             }
 
+            let finalPrompt = "";
             if (evaluated.mode === "MAP_SCRIPT") {
-                await callAI(evaluated.mapName, true);
+                finalPrompt = `Buatkan script Roblox Lua untuk map: ${evaluated.mapName}`;
             } else {
-                await callAI(evaluated.message, false);
+                finalPrompt = evaluated.message;
             }
+
+            await callAI(finalPrompt);
         }
 
         document.getElementById("sendButton").addEventListener("click", handleSend);
