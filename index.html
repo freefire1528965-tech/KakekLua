@@ -1,81 +1,149 @@
-async function processAIResponse(rawUserMessage) {
-    const text = String(rawUserMessage || "").trim();
-    const lowerText = text.toLowerCase();
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KakekLua AI Hub</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 14px; border-radius: 8px; max-width: 80%; word-wrap: break-word; white-space: pre-wrap; line-height: 1.4; }
+        .user-message { background: #007bff; color: #fff; align-self: flex-end; }
+        .bot-message { background: #2a2a2a; color: #fff; align-self: flex-start; }
+        .input-area { display: flex; padding: 12px; background: #1e1e1e; border-top: 1px solid #333; position: sticky; bottom: 0; width: 100%; }
+        .input-area input { flex: 1; padding: 12px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 6px; outline: none; font-size: 14px; }
+        .input-area button { padding: 12px 20px; background: #007bff; color: #fff; border: none; border-radius: 6px; margin-left: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-    chatHistory.push(text);
+    <div id="chat-container">
+        <div class="message bot-message">Halo bro 😎 ada yang bisa dibantu?</div>
+    </div>
 
-    await new Promise(resolve => setTimeout(resolve, 700));
+    <div class="input-area">
+        <input type="text" id="chatInput" placeholder="Ketik pesan atau 'map: NamaMap'...">
+        <button id="sendButton">Kirim</button>
+    </div>
 
-    const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
-    if (mapTriggerMatch) {
-        let rawQuery = mapTriggerMatch[1].trim();
+    <script>
+        // Menyimpan riwayat percakapan untuk konteks multi-turn
+        let chatHistory = [];
 
-        if (!rawQuery) {
-            return "Formatnya kurang lengkap, bro. Contoh: map: race for egg";
+        function appendMessage(sender, text) {
+            const chatContainer = document.getElementById("chat-container");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${sender === "user" ? "user-message" : "bot-message"}`;
+            messageDiv.innerText = text;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        let cleanMapName = rawQuery
-            .replace(/(ada gak\?*|ada gak|tolong carikan|saya butuh.*|butuh script.*|cari script.*)/gi, "")
-            .trim();
+        // ==========================================
+        // SISTEM 2 MODE UTAMA
+        // ==========================================
+        async function processAIResponse(rawUserMessage) {
+            const text = String(rawUserMessage || "").trim();
+            const lowerText = text.toLowerCase();
 
-        if (!cleanMapName) {
-            cleanMapName = rawQuery;
+            // Simpan ke riwayat memori percakapan
+            chatHistory.push(text);
+
+            await new Promise(resolve => setTimeout(resolve, 700)); // Simulasi jeda ngetik natural
+
+            // ==========================================
+            // MODE 2: SCRIPT (Hanya jika diawali "map:")
+            // ==========================================
+            const mapTriggerMatch = text.match(/^map\s*:\s*(.*)$/i);
+            if (mapTriggerMatch) {
+                const mapName = mapTriggerMatch[1].trim();
+                const targetDisplay = mapName ? mapName : "Default Map";
+
+                return `// KakekLua Script Generator [MODE SCRIPT AKTIF]\n-- Target Map: ${targetDisplay}\n\nlocal player = game.Players.LocalPlayer\nprint("Skrip berhasil digenerate untuk: ${targetDisplay}!");\n\nwhile task.wait(1) do\n    -- Logika utama script berjalan di sini\nend`;
+            }
+
+            // ==========================================
+            // MODE 1: CHAT NORMAL (Paham Konteks & Dinamis)
+            // ==========================================
+
+            // 1. Tanggapan Sapaan
+            if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
+                return "Halo bro 😎";
+            }
+
+            // 2. Tanggapan Kabar
+            if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
+                return "Baik bro 😎 lu sendiri gimana?";
+            }
+
+            // 3. Tanggapan Cari Bantuan
+            if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
+                return "Siap bro, bantuan soal apa?";
+            }
+
+            // 4. Tanggapan Cari Script
+            if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
+                return "Siap bro 😎 script apa yang lu cari?";
+            }
+
+            // 5. Tanggapan Error / Masalah
+            if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
+                return "Errornya di bagian mana bro?";
+            }
+
+            // 6. Tanggapan Kebingungan / Curhat
+            if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
+                return "Wkwk kenapa bro? Cerita aja.";
+            }
+
+            // 7. Tanggapan Kondisi Bot / Lagi Ngapain
+            if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
+                return "Lagi standby nih wkwk 😎";
+            }
+
+            // 8. Tanggapan Konteks Lanjutan (Prioritas Pesan Terbaru & Riwayat)
+            const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
+            
+            if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
+                return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung digenerate kodenya ya!`;
+            }
+
+            // 9. Respon Default Dinamis (Menghindari template kaku yang berulang)
+            return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
         }
 
-        const foundScript = searchScriptFromDatabase(cleanMapName); 
+        async function handleSend() {
+            const inputElement = document.getElementById("chatInput");
+            const rawText = inputElement.value;
+            if (!rawText.trim()) return;
 
-        if (foundScript) {
-            return `// KakekLua Script Hub [DITEMUKAN]\n-- Target Map: ${cleanMapName}\n\n${foundScript}`;
-        } else {
-            return `Waduh bro, untuk map "${cleanMapName}" script-nya belum ketemu nih di database kita. Coba cek kata kunci atau nama map-nya lagi ya!`;
+            // Tampilkan pesan user
+            appendMessage("user", rawText);
+            inputElement.value = "";
+
+            // Indikator loading
+            const loadingId = "loading_" + Date.now();
+            const chatContainer = document.getElementById("chat-container");
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "message bot-message";
+            loadingDiv.id = loadingId;
+            loadingDiv.innerText = "sedang mengetik...";
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Proses respons AI berdasarkan 2 Mode
+            const botReply = await processAIResponse(rawText);
+
+            // Hapus loading & tampilkan jawaban
+            document.getElementById(loadingId).remove();
+            appendMessage("bot", botReply);
         }
-    }
 
-    if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
-        return "Halo bro 😎";
-    }
-
-    if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
-        return "Baik bro 😎 lu sendiri gimana?";
-    }
-
-    if (lowerText.includes("cari bantuan") || lowerText.includes("minta tolong") || lowerText.includes("butuh bantuan")) {
-        return "Siap bro, bantuan soal apa?";
-    }
-
-    if (lowerText.includes("cari script") || lowerText.includes("butuh script") || lowerText.includes("mau script")) {
-        return "Siap bro 😎 script apa yang lu cari?";
-    }
-
-    if (lowerText.includes("error") || lowerText.includes("bug") || lowerText.includes("masalah")) {
-        return "Errornya di bagian mana bro?";
-    }
-
-    if (lowerText.includes("bingung") || lowerText.includes("pusing") || lowerText.includes("ribet")) {
-        return "Wkwk kenapa bro? Cerita aja.";
-    }
-
-    if (lowerText.includes("lagi ngapain") || lowerText.includes("lagi sibuk") || lowerText.includes("sibuk apa")) {
-        return "Lagi standby nih wkwk 😎";
-    }
-
-    const previousMessage = chatHistory.length > 1 ? chatHistory[chatHistory.length - 2].toLowerCase() : "";
-    
-    if (previousMessage.includes("cari script") || previousMessage.includes("script apa")) {
-        return `Oke bro 😎 untuk skrip ${text}, nanti tinggal ketik map: [NamaMap] kalau mau langsung dicariin datanya ya!`;
-    }
-
-    return `Oh ngomongin soal "${text}", ada hal spesifik lain yang mau dibahas atau ditanyakan, bro?`;
-}
-
-function searchScriptFromDatabase(mapName) {
-    const databaseSimulasi = {
-        "race for egg": `local plrs = game.Players.LocalPlayer\nprint("Auto Farm Active for Race For Egg!")\n-- Sumber: Database KakekLua`,
-    };
-
-    const key = mapName.toLowerCase();
-    if (databaseSimulasi[key]) {
-        return databaseSimulasi[key];
-    }
-    return null;
-}
+        document.getElementById("sendButton").addEventListener("click", handleSend);
+        document.getElementById("chatInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") handleSend();
+        });
+    </script>
+</body>
+</html>
