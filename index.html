@@ -19,7 +19,7 @@
 <body>
 
     <div id="chat-container">
-        <div class="message bot-message">Halo bro 😎 ada yang bisa dibantu?</div>
+        <div class="message bot-message">Halo bro ada yg bisa kakek bantu 🤘</div>
     </div>
 
     <div class="input-area">
@@ -39,6 +39,24 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        // Database script spesifik berdasarkan nama map
+        function getScriptForMap(mapName) {
+            const cleanKey = mapName.toLowerCase().trim();
+            
+            // Database penyimpanan link loadstring per map
+            const scriptDatabase = {
+                "+1 kekuatan untuk menumbuhkan lengan anda": 'loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()',
+                "race for egg": 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ contoh-link-lain.lua"))()'
+            };
+
+            if (scriptDatabase[cleanKey]) {
+                return scriptDatabase[cleanKey];
+            }
+            
+            // Fallback default jika map belum terdaftar di database
+            return `loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()`;
+        }
+
         async function processAIResponse(rawUserMessage) {
             const text = String(rawUserMessage || "").trim();
             const lowerText = text.toLowerCase();
@@ -56,7 +74,6 @@
                     return "Formatnya kurang lengkap, bro. Contoh: map: race for egg";
                 }
 
-                // Bersihkan kalimat tanya di belakang nama map
                 let cleanMapName = rawQuery
                     .replace(/(ada gak\?*|ada gak|tolong carikan|saya butuh.*|butuh script.*|cari script.*)/gi, "")
                     .trim();
@@ -65,13 +82,14 @@
                     cleanMapName = rawQuery;
                 }
 
-                // Langsung berikan output loadstring script sesuai permintaan
-                return `loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/eb5ce9ad18c86812d14bb5064124df9a53e11b4f2bc9815d870d4f3bae04660c/download"))()\n\n-- Target Map: ${cleanMapName}`;
+                const matchedScript = getScriptForMap(cleanMapName);
+
+                return `${matchedScript}\n\n-- Target Map: ${cleanMapName}`;
             }
 
             // MODE CHAT NORMAL
             if (lowerText.match(/^(halo|hai|p|assalamu[']?alaikum|hi)/)) {
-                return "Halo bro 😎";
+                return "Halo bro ada yg bisa kakek bantu 🤘";
             }
 
             if (lowerText.includes("apa kabar") || lowerText.includes("gimana kabarmu")) {
