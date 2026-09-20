@@ -1,11 +1,34 @@
-// KODE YANG BIKIN "BANDEL" (Biasanya ada di bawah sendiri)
-document.getElementById("searchBtn").addEventListener("click", function() {
-    let userInput = document.getElementById("userInput").value;
-    
-    // NGE-TRIGGER INI LANGSUNG TANPA FILTER BALASAN CHAT!
-    let result = processUserMessage(userInput); 
-    
-    // Kalau fungsi lamamu langsung nampilin kotak script setiap kali ada input:
-    displayScriptBox(result); // <- INI MASALAHNYA!
-});
-        
+function detectIntent(message) {
+    const text = message.trim();
+
+    // Command khusus:
+    // "map:" di awal pesan = user meminta mode script map
+    if (/^map\s*:/i.test(text)) {
+        return {
+            type: "MAP_SCRIPT",
+            mapName: text.replace(/^map\s*:/i, "").trim()
+        };
+    }
+
+    // Selain command khusus, anggap sebagai percakapan biasa
+    return {
+        type: "CHAT",
+        message: text
+    };
+}
+
+async function handleUserMessage(message) {
+    const intent = detectIntent(message);
+
+    if (intent.type === "MAP_SCRIPT") {
+        if (!intent.mapName) {
+            return "Siap bro 😎 sebutin nama map-nya setelah `map:`.";
+        }
+
+        return generateMapScript(intent.mapName);
+    }
+
+    // Jangan membuat script hanya karena user menyebut
+    // kata "script", "map", atau "kode".
+    return chatNormally(message);
+}
